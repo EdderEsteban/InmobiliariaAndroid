@@ -1,0 +1,62 @@
+@{
+    ViewData["Title"] = " Busqueda de Propietarios";
+}
+
+<div class="text-center mb-4">
+    <h1 class="display-4">Busqueda de Propietarios</h1>
+
+</div>
+
+<div class="row">
+    <div class="card col-2">
+        <div class="card-content mb-3">
+            <form method="post" id="formSearch">
+                <div class="form-floating mb-3 mt-2">
+                    <input name="Nombre" id="Nombre" class="form-control" placeholder="" />
+                    <label name="Nombre" class="control-label">Nombre</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input name="Apellido" id="Apellido" class="form-control" placeholder="" />
+                    <label name="Apellido" class="control-label">Apellido</label>
+                </div>
+                <div class="form-floating mb-3">
+
+                    <input name="Dni" id="Dni" class="form-control" placeholder="" />
+                    <label name="Dni" class="control-label">Dni</label>
+                </div>
+                <div class="form-group col-12 text-center mt-3">
+                    <button type="button" id="btnBuscar" class="btn btn-success" name="btnBuscar">
+                        Buscar
+                        <i class="material-symbols-outlined ">search</i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-10">
+        <div class="container">
+            <div class="table-responsive">
+                <table id="tblPropietarios" class="table table-sm table-hover table-light text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>DNI</th>
+                            <th>Direccion</th>
+                            <th>Telefono</th>
+                            <th>Correo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyPropietarios">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="/js/BuscarPropietarios.js" asp-append-version="true"></script>

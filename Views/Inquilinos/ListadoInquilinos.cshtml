@@ -1,0 +1,80 @@
+@model IList<Inmobiliaria.Models.Inquilinos>
+
+@{
+    ViewData["Title"] = "Inquilinos";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="text-center mb-4">
+    <h1 class="display-4">Listado de Inquilinos</h1>
+</div>
+
+<div class="row">
+    <div class="col-1">
+        <div class="mb-3">
+            <a class="btn btn-success btn-sm" asp-controller="Inquilinos" asp-action="CrearInquilino"
+                title="Crear Propietario">Nuevo
+                <i class="material-symbols-outlined">person_pin_circle</i></a>
+        </div>
+    </div>
+    <div class="col-11">
+        <div class="container">
+            <div class="table-responsive">
+                <table id="tblInquilino" class="table table-sm table-hover table-light text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>DNI</th>
+                            <th>Direccion</th>
+                            <th>Telefono</th>
+                            <th>Correo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var inquilino in Model)
+                        {
+                            <tr>
+                                <td>@inquilino.Nombre</td>
+                                <td>@inquilino.Apellido</td>
+                                <td>@inquilino.Dni</td>
+                                <td>@inquilino.Direccion</td>
+                                <td>@inquilino.Telefono</td>
+                                <td>@inquilino.Correo</td>
+                                <td><a class="material-symbols-outlined" asp-controller="Inquilinos"
+                                        asp-action="EditarInquilino" asp-route-Id="@inquilino.Id_inquilino">edit_note</a> |
+                                    <a class="material-symbols-outlined" asp-controller="Inquilinos"
+                                        asp-action="EliminarInquilino" asp-route-Id="@inquilino.Id_inquilino">delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<script src="/js/DataTable.js" asp-append-version="true"></script>

@@ -1,0 +1,72 @@
+@model IList<InmuebleTipo>
+
+@{
+    ViewData["Title"] = "Tipos de Inmuebles";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="text-center mb-4">
+    <h1 class="display-4">Listado de Tipos Inmuebles</h1>
+</div>
+<div class="row">
+    <div class="col-1">
+        <div class="mb-3">
+            <a class="btn btn-success btn-sm" asp-controller="Tipo" asp-action="CrearTipo"
+                title="Crear Tipo de Inmueble">Nuevo
+                <i class="material-symbols-outlined">person_pin_circle</i></a>
+        </div>
+    </div>
+    <div class="col-11">
+        <div class="container">
+            <div class="table-responsive">
+                <table id="tblInmuebles" class="table table-sm table-hover table-light text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Id</th>
+                            <th>Tipo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var tipo in Model)
+                        {
+                            <tr>
+                                <td>@(tipo.Id_tipo)</td>
+                                <td>@(tipo.Tipo)</td>
+                                <td name="Acciones">
+                                    <a class="material-symbols-outlined" asp-controller="Inmuebles"
+                                        asp-action="EliminarTipo" asp-route-Id="@tipo.Id_tipo">delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<script src="/js/DataTable.js" asp-append-version="true"></script>
+<script src="/js/BuscarInmuebles.js" asp-append-version="true"></script>

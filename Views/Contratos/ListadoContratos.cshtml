@@ -1,0 +1,133 @@
+@model IList<Contrato>
+@{
+    ViewData["Title"] = "Contratos";
+    var listaInmueblesDisponibles = ViewBag.inmueblesDisponibles as List<Inmuebles>;
+    var listaInquilinos = ViewBag.inquilinos as List<Inquilinos>;
+}
+
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="text-center mb-4">
+    <h1 class="display-4">Listado de Contratos</h1>
+</div>
+<div class="row">
+    <div class="col-1">
+        <div class="mb-3">
+            <a class="btn btn-success btn-sm" asp-controller="Contratos" asp-action="CrearContrato"
+                title="Crear Contrato">Nuevo
+                <i class="material-symbols-outlined">person_pin_circle</i></a>
+        </div>
+    </div>
+    <div class="col-11">
+        <div class="container">
+            <div class="table-responsive">
+                <table id="tblContratos" class="table table-sm table-hover table-light text-center">
+                    <thead>
+                        <tr>
+                            <th>N° de Contrato</th>
+                            <th>Inquilino</th>
+                            <th>Inmueble</th>
+                            <th>Fecha de Inicio</th>
+                            <th>Fecha de Fin</th>
+                            <th>Precio Inmueble</th>
+                            <th>Monto Contrato</th>
+                            <th>Vigencia</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var contrato in Model)
+                        {
+                            <tr>
+                                <td>@contrato.Id_contrato</td>
+                                <td>
+                                    @{
+                                        var inquilino = listaInquilinos.FirstOrDefault(i => i.Id_inquilino ==
+                                        contrato.Id_inquilino);
+                                        if (inquilino != null)
+                                        {
+                                            <text>@($"{inquilino.Nombre} {inquilino.Apellido}")</text>
+                                        }
+                                        else
+                                        {
+                                            <text>Nombre no encontrado</text>
+                                        }
+                                    }
+                                </td>
+                                <td>
+                                    @{
+                                        var inmueble = listaInmueblesDisponibles.FirstOrDefault(i => i.Id_inmueble ==
+                                        contrato.Id_inmueble);
+                                        if (inmueble != null)
+                                        {
+                                            <text>@inmueble.Direccion</text>
+                                        }
+                                        else
+                                        {
+                                            <text>Dirección no encontrada</text>
+                                        }
+                                    }
+                                </td>
+                                <td>@contrato.Fecha_inicio.ToString("dd/MM/yyyy")</td>
+                                <td>@contrato.Fecha_fin.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    @{
+                                        var precio = listaInmueblesDisponibles.FirstOrDefault(i => i.Id_inmueble ==
+                                        contrato.Id_inmueble);
+                                        if (precio != null)
+                                        {
+                                            <text>@precio.Precio_Alquiler</text>
+                                        }
+                                        else
+                                        {
+                                            <text>Sin Datos</text>
+                                        }
+                                    }
+                                </td>
+                                <td>@contrato.Monto</td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox"
+                                            id="switchVigencia-@contrato.Id_contrato" @(contrato.Vigencia ? "checked" : "")
+                                            disabled />
+                                        <label class="form-check-label" for="switchVigencia-@contrato.Id_contrato"></label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a class="material-symbols-outlined" asp-action="EditarContrato"
+                                        asp-route-id="@contrato.Id_contrato">edit_note</a> |
+                                    <a class="material-symbols-outlined" asp-action="EliminarContrato"
+                                        asp-route-id="@contrato.Id_contrato">delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<script src="/js/DataTable.js" asp-append-version="true"></script>

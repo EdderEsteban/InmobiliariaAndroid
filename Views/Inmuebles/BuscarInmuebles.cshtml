@@ -1,0 +1,88 @@
+@{
+    ViewData["Title"] = " Busqueda de Inmuebles";
+}
+
+<div class="text-center mb-4">
+    <h1 class="display-4">Busqueda de Inmuebles</h1>
+
+</div>
+
+<div class="row">
+    <div class="card col-2">
+        <div class="card-content mb-3">
+            <form method="post" id="formSearch">
+                <div class="row mb-3 mt-2">
+                    <div class="col-8">
+                        <div class="form-floating">
+                            <input name="Id" id="Id" class="form-control" placeholder="" />
+                            <label for="Id" class="control-label">Id</label>
+                        </div>
+                    </div>
+                    <div class="col-2 d-flex align-items-center">
+                        <button type="button" id="btnBuscar" class="btn btn-success" name="btnBuscar">
+                            <i class="material-symbols-outlined">search</i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <form method="post" id="formSearchDir">
+                <div class="row mb-3 mt-2">
+                    <div class="col-8">
+                        <div class="form-floating">
+                            <input name="Direccion" id="Direccion" class="form-control" placeholder="" />
+                            <label for="Direccion" class="control-label">Direccion</label>
+                        </div>
+                    </div>
+                    <div class="col-2 d-flex align-items-center">
+                        <button type="button" id="btnBuscarDir" class="btn btn-success" name="btnBuscarDir">
+                            <i class="material-symbols-outlined">search</i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="text center">
+                <div class="form-floating mb-3">
+                    <Button type="button" id="btnAlquilados" class="btn btn-success w-75"
+                        name="btnAlquilados">Alquilados</Button>
+                </div>
+                <div class="form-floating mb-3">
+                    <Button type="button" id="btnDisponibles" class="btn btn-success w-75"
+                        name="btnAlquilados">Disponibles</Button>
+                </div>
+                <div class="form-floating mb-3">
+                    <Button type="button" id="btnInactivos" class="btn btn-success w-75"
+                        name="btnAlquilados">Inactivos</Button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-10">
+        <div class="container">
+            <div class="table-responsive">
+                <table id="tblInmuebles" class="table table-sm table-hover table-light text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Id</th>
+                            <th>Direccion</th>
+                            <th>Uso</th>
+                            <th>Tipo</th>
+                            <th>Ambientes</th>
+                            <th>Precio</th>
+                            <th>Ubicacion</th>
+                            <th>Propietario</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyInmuebles">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="/js/BuscarInmuebles.js" asp-append-version="true"></script>

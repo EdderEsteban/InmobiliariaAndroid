@@ -1,0 +1,99 @@
+@model Usuario
+
+@{
+    ViewData["Title"] = "Editar Usuario";
+}
+@if (TempData["SuccessMessage"] != null)
+
+
+
+
+
+
+
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+
+
+
+
+
+
+
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="text-center mb-4">
+    <h2 class="display-4">Editar Usuario</h2>
+</div>
+
+<div class="container col-8">
+    <h4>Modificar Usuario</h4>
+
+    <form method="post" asp-action="ModificarUser" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Id_usuario" id="Id_usuario" />
+
+        <div class="row mt-3">
+            <div class="form-floating mb-3 col-6">
+                <input type="text" asp-for="Nombre" class="form-control" placeholder="Nombre" />
+                <label asp-for="Nombre" class="control-label">Nombre</label>
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3 col-6">
+                <input type="text" asp-for="Apellido" class="form-control" placeholder="Apellido" />
+                <label asp-for="Apellido" class="control-label">Apellido</label>
+                <span asp-validation-for="Apellido" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="form-floating mb-3 col-6">
+                <input type="email" asp-for="Email" class="form-control" placeholder="Email" id="Email" />
+                <label asp-for="Email" class="control-label">Email</label>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            @if (User.IsInRole("Administrador"))
+            {
+                <div class="form-floating mb-3 col-6">
+                    <select asp-for="Rol" class="form-control">
+                        <option value="administrador">Administrador</option>
+                        <option value="empleado">Empleado</option>
+                    </select>
+                    <label asp-for="Rol" class="control-label">Rol</label>
+                    <span asp-validation-for="Rol" class="text-danger"></span>
+                </div>
+            }
+            <div class="form-floating mb-3 col-6">
+                <input asp-for="AvatarFile" type="file" class="form-control" placeholder="" />
+                <label asp-for="AvatarFile" class="control-label">Avatar</label>
+                <span asp-validation-for="Avatar" class="text-danger"></span>
+            </div>
+            <div class="form-floating mt-2 mb-3 col-6">
+                <a asp-action="EliminarAvatar" asp-route-id="@Model.Id_usuario" class="btn btn-danger">Borrar Avatar</a>
+
+            </div>
+        </div>
+
+        <div class="form-group col-12 text-center mt-3">
+            <input type="submit" value="Guardar" class="btn btn-success w-25 mx-2" />
+            <button type="button" id="btnPass" class="btn btn-warning w-25 mx-2">Cambiar Pass</button>
+            @if (User.IsInRole("Administrador"))
+            {
+                <button type="button" id="btnResetPass" class="btn btn-danger w-25">Reiniciar Pass</button>
+            }
+        </div>
+    </form>
+</div>
+
+<script src="/js/EditarUsuario.js" asp-append-version="true"></script>

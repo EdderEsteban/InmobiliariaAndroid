@@ -1,0 +1,47 @@
+@model Pago
+
+@{
+    ViewData["Title"] = "Detalles del Pago";
+    var inquilino = ViewBag.inquilino;
+    var contrato = ViewBag.contrato;
+    var inmueble = ViewBag.inmueble;
+}
+
+<h1>Detalles del Pago</h1>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Información del Pago</h3>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">N° Pago</dt>
+            <dd class="col-sm-9">@Model.Id_Pago</dd>
+
+            <dt class="col-sm-3">N° Contrato</dt>
+            <dd class="col-sm-9">@Model.Id_Contrato</dd>
+
+            <dt class="col-sm-3">Inquilino</dt>
+            <dd class="col-sm-9">@inquilino.Nombre @inquilino.Apellido</dd>
+
+            <dt class="col-sm-3">Inmueble</dt>
+            <dd class="col-sm-9">@inmueble.Tipo.Tipo</dd>
+
+            <dt class="col-sm-3">Domicilio</dt>
+            <dd class="col-sm-9">@inmueble.Direccion</dd>
+
+
+            <dt class="col-sm-3">Fecha de Pago</dt>
+            <dd class="col-sm-9">@Model.Fecha_Pago.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3">Monto</dt>
+            <dd class="col-sm-9">$@Model.Monto.ToString("N2")</dd>
+
+            <dt class="col-sm-3">Periodo</dt>
+            <dd class="col-sm-9">@Model.Periodo.ToString("MM/yyyy")</dd>
+        </dl>
+    </div>
+    <div class="card-footer">
+        <a asp-action="ListadoPagos" class="btn btn-primary">Volver</a>
+    </div>
+</div>

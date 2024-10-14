@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="card">
+    <div class="text-center ">
+        <h1 class="display-4">Bienvenido al Sistema de Inmobiliarias de .NET</h1>
+    </div>
+</div>
+<div>
+    <div class="card text-center">
+        <div class="card-content">
+            <div class="card-body">
+                <p class="card-text">En esta página encontrarás información de las inmobiliarias registradas en el
+                    sistema.</p>
+                <p class="card-text">Solo necesitas ingresar al sistema con tu correo y contraseña</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <div class="card text-center">
+        <div class="card-content">
+            <div class="card-body">
+                @if (!User.Identity.IsAuthenticated) // Verifica si el usuario NO está autenticado
+                {
+                    <a asp-action="Login" asp-controller="Usuarios" class="btn btn-success">Iniciar Sesión</a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

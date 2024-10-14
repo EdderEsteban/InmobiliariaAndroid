@@ -1,0 +1,82 @@
+@model Usuario
+
+@{
+    ViewData["Title"] = "Crear Usuario";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="text-center mb-4">
+    <h2 class="display-4">Crear Usuario</h2>
+</div>
+
+<div class="container col-8">
+    <h4>Nuevo Usuario</h4>
+    <form method="post" asp-action="NuevoUsuario" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="row mt-3">
+            <div class="form-floating mb-3 col-6">
+                <input asp-for="Nombre" class="form-control" placeholder="" />
+                <label asp-for="Nombre" class="control-label">Nombre</label>
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3 col-6">
+                <input asp-for="Apellido" class="form-control" placeholder="" />
+                <label asp-for="Apellido" class="control-label">Apellido</label>
+                <span asp-validation-for="Apellido" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="form-floating mb-3 col-6">
+                <input asp-for="Email" class="form-control" placeholder="" />
+                <label asp-for="Email" class="control-label">Email</label>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3 col-6">
+                <input asp-for="Password" type="password" class="form-control" placeholder="" />
+                <label asp-for="Password" class="control-label">Contraseña</label>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="form-floating mb-3 col-6">
+                <select asp-for="Rol" class="form-select">
+                    <option value="">Seleccione un rol</option>
+                    <option value="1">Administrador</option>
+                    <option value="2">Empleado</option>
+                </select> 
+                <label asp-for="Rol" class="control-label">Rol</label>
+                <span asp-validation-for="Rol" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3 col-6">
+                <input asp-for="AvatarFile" type="file" class="form-control" placeholder="" />
+                <label asp-for="AvatarFile" class="control-label">Avatar</label>
+                <span asp-validation-for="Avatar" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row mt-3 text-center">
+            <div name="Acciones" class="form-group mb-3 mx-25">
+                <input type="submit" value="Guardar" class="btn btn-success" />
+                <a asp-action="ListadoUsuarios" class="btn btn-primary">Volver</a>
+            </div>
+        </div>
+    </form>
+</div>

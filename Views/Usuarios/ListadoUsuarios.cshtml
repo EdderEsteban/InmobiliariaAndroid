@@ -1,0 +1,86 @@
+@model List<Usuario>
+
+@{
+    ViewData["Title"] = "Listado de Usuarios";
+}
+
+<h1>Listado de Usuarios</h1>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="text-center mb-4">
+    <h1 class="display-4">Listado de Usuarios</h1>
+</div>
+<div class="row">
+    <div class="col-1">
+        <div class="mb-3">
+            <a class="btn btn-success btn-sm" asp-controller="Usuarios" asp-action="CrearUsuario"
+                title="Crear Pago">Nuevo
+                <i class="material-symbols-outlined">person_pin_circle</i></a>
+        </div>
+    </div>
+    <div class="col-11">
+        <div class="container">
+            <div class="table-responsive text-center">
+                <table class="table table-sm table-striped table-hover table-light">
+                    <thead>
+                        <tr>
+                            <th>N° Id</th>
+                            <th>Operador</th>
+                            <th>Usuario</th>
+                            <th>Avatar</th>
+                            <th>Rol</th>
+                            <th>Fecha de Alta</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var usuario in Model)
+                        {
+                            <tr>
+                                <td>@usuario.Id_usuario</td>
+                                <td>@usuario.Nombre @usuario.Apellido</td>
+                                <td>@usuario.Email</td>
+                                <td><img src="@usuario.Avatar" width="50" height="50"></td>
+                                <td>@usuario.Rol</td>
+                                <td>@usuario.Fecha.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <a class="material-symbols-outlined" asp-controller="Usuarios"
+                                        asp-action="EditarUsuario" asp-route-Id="@usuario.Id_usuario">edit_note</a> |
+                                    <a class="material-symbols-outlined" title="Borrar Usuario"
+                                        asp-action="EliminarUsuario" asp-route-id="@usuario?.Id_usuario"
+                                        style="cursor: pointer;">delete</a>
+                                    <a type="button" class="material-symbols-outlined btnPass">lock_reset</a>   
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<script src="/js/DataTable.js" asp-append-version="true"></script>
+<script src="/js/CambiarPass.js" asp-append-version="true"></script>

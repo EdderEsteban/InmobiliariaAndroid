@@ -1,0 +1,59 @@
+@model Contrato
+@{
+    ViewData["Title"] = "Editar Contrato";
+    var inquilino = ViewBag.inquilino;
+    var inmueble = ViewBag.inmueble;
+}
+
+<div class="text-center mb-4">
+    <h2 class="display-4">Editar Contrato</h2>
+</div>
+
+<div class="container col-8">
+    <h4>Modificar Contrato</h4>
+    <form method="Post" asp-action="ModificarContrato">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Id_contrato" />
+        <div class="row mt-3">
+            <div class="form-floating mb-3 col-6">
+                <input asp-for="Inquilino" class="form-control"
+                    value="@(ViewBag.Inquilino.Nombre) @(ViewBag.Inquilino.Apellido) @(ViewBag.inquilino.Dni)" />
+                <input type="hidden" asp-for="Id_inquilino" />
+                <label asp-for="Inquilino" class="control-label">Inquilino</label>
+                <span asp-validation-for="Id_inquilino" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3 col-6">
+                <input asp-for="Inmueble" class="form-control" value="@(ViewBag.Inmueble.Direccion)" />
+                <input type="hidden" asp-for="Id_inmueble" />
+                <label asp-for="Inmueble" class="control-label">Inmueble</label>
+                <span asp-validation-for="Id_inmueble" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="form-floating mb-3 col-6">
+                <input asp-for="Fecha_inicio" class="form-control" value="@Model.Fecha_inicio.ToString("yyyy-MM-dd")" />
+                <label asp-for="Fecha_inicio" class="control-label">Fecha de Inicio</label>
+                <span asp-validation-for="Fecha_inicio" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3 col-6">
+                <input asp-for="Fecha_fin" class="form-control" value="@Model.Fecha_fin.ToString("yyyy-MM-dd")" />
+                <label asp-for="Fecha_fin" class="control-label">Fecha de Fin</label>
+                <span asp-validation-for="Fecha_fin" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="form-floating mb-3 col-6">
+                <input asp-for="Monto" class="form-control" value="@(Model.Monto)" />
+                <label asp-for="Monto" class="control-label">Monto</label>
+                <span asp-validation-for="Monto" class="text-danger"></span>
+            </div>
+            <div class="form-group col-6 text-center mt-3">
+                <input type="submit" value="Guardar" class="btn btn-success" />
+                <a asp-action="ListadoContratos" class="btn btn-primary">Volver</a>
+            </div>
+        </div>
+    </form>
+</div>
+</div>
+</div>

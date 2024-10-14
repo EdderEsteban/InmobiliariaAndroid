@@ -1,0 +1,54 @@
+@{
+    ViewData["Title"] = " Busqueda de Contratos";
+}
+
+<div class="text-center mb-4">
+    <h1 class="display-4">Busqueda de Contratos</h1>
+
+</div>
+
+<div class="row">
+    <div class="card col-2">
+        <div class="card-content mb-3">
+            <div class="text-center"> 
+                <div class="form-floating mb-3 mt-4">
+                    <button type="button" id="btnVigentes" class="btn btn-success w-75 mx-auto"
+                        name="btnVigentes">Vigentes</button>
+                </div>
+                <div class="form-floating mb-3">
+                    <button type="button" id="btnTerminados" class="btn btn-success w-75 mx-auto"
+                        name="btnTerminados">Terminados</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-10">
+        <div class="container">
+            <div class="table-responsive">
+                <table id="tblContratos" class="table table-sm table-hover table-light text-center">
+                    <thead>
+                        <tr>
+                            <th>N° de Contrato</th>
+                            <th>Inquilino</th>
+                            <th>Inmueble</th>
+                            <th>Fecha de Inicio</th>
+                            <th>Fecha de Fin</th>
+                            <th>Precio Inmueble</th>
+                            <th>Monto Contrato</th>
+                            <th>Vigencia</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tblBodyContratos">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="/js/BuscarContratos.js" asp-append-version="true"></script>

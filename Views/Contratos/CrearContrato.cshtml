@@ -1,0 +1,114 @@
+@model Contrato
+
+@{
+    ViewData["Title"] = "Crear Contrato";
+    var listaInmueblesDisponibles = ViewBag.inmueblesDisponibles as List<Inmuebles>;
+    var listaInquilinos = ViewBag.inquilinos as List<Inquilinos>;
+
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 card">
+            <h2>Crear Contrato</h2>
+            <form method="post" asp-action="GuardarContrato">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-floating mb-3">
+                    <select asp-for="Id_inquilino" class="form-control" id="listInquilino">
+                        <option value="">Seleccione Inquilino</option>
+                        @foreach (var inquilino in listaInquilinos)
+                        {
+                            <option value="@inquilino.Id_inquilino">@inquilino.Nombre @inquilino.Apellido @inquilino.Dni
+                            </option>
+                        }
+                    </select>
+                    <label asp-for="Inquilino" class="control-label">Inquilino</label>
+                    <span asp-validation-for="Inmueble" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <select asp-for="Id_inmueble" class="form-control" id="listInmueble">
+                        <option value="">Seleccione Inmueble</option>
+                        @foreach (var inmueble in listaInmueblesDisponibles)
+                        {
+                            <option value="@inmueble.Id_inmueble">@inmueble.Direccion</option>
+                        }
+                    </select>
+                    <label for="listInmueble" class="control-label">Inmueble</label>
+                    <span asp-validation-for="Inmueble" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Monto" class="form-control" placeholder="" />
+                    <label asp-for="Monto" class="control-label">Monto del Contrato</label>
+                    <span asp-validation-for="Monto" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Fecha_inicio" class="control-label">Fecha de Inicio</label>
+                    <input asp-for="Fecha_inicio" type="date" class="form-control" />
+                    <span asp-validation-for="Fecha_inicio" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Fecha_fin" class="control-label">Fecha de Fin</label>
+                    <input asp-for="Fecha_fin" type="date" class="form-control" />
+                    <span asp-validation-for="Fecha_fin" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+
+                    <input asp-for="Vigencia" type="checkbox" class="form-control" disabled />
+
+                </div>
+
+                <div name="Acciones" class="form-group mb-3">
+                    <input type="submit" value="Guardar" class="btn btn-success" />
+                    <a asp-action="ListadoContratos" class="btn btn-primary">Volver</a>
+
+                </div>
+            </form>
+        </div>
+        <div class="col-md-8 card">
+            <h2>Inmueble</h2>
+            <table id="tblInmuebles" class="table table-sm table-hover table-light text-center">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Direccion</th>
+                        <th>Uso</th>
+                        <th>Tipo</th>
+                        <th>Ambientes</th>
+                        <th>Precio</th>
+                        <th>Ubicacion</th>
+                        <th>Propietario</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var inmueble in listaInmueblesDisponibles)
+                    {
+                        <tr>
+                            <td>@inmueble.Id_inmueble</td>
+                            <td>@inmueble.Direccion</td>
+                            <td>@inmueble.Uso</td>
+                            <td>@(inmueble?.Tipo?.Tipo)</td>
+                            <td>@inmueble.Cantidad_Ambientes</td>
+                            <td>@inmueble.Precio_Alquiler</td>
+                            <td>
+                                <a href="https://www.google.com/maps/search/?api=1&query=@inmueble?.Latitud,@inmueble?.Longitud"
+                                    target="_blank">
+                                    <span class="material-symbols-outlined">home_pin</span>
+                                </a>
+                            </td>
+                            <td>@($"{inmueble?.Propietarios?.Nombre} {inmueble?.Propietarios?.Apellido}" ?? "")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<script src="/js/DataTable.js" asp-append-version="true"></script>
+<script src="/js/SelectContrato.js" asp-append-version="true"></script>

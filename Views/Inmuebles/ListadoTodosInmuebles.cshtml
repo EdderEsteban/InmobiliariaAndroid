@@ -1,0 +1,99 @@
+@model IList<Inmobiliaria.Models.Inmuebles>
+
+@{
+    ViewData["Title"] = "Inmuebles";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="text-center mb-4">
+    <h1 class="display-4">Listado de Inmuebles</h1>
+</div>
+<div class="row">
+    <div class="col-1">
+        <div class="mb-3">
+            <a class="btn btn-success btn-sm" asp-controller="Inmuebles" asp-action="CrearInmueble"
+                title="Crear Contrato">Nuevo
+                <i class="material-symbols-outlined">person_pin_circle</i></a>
+                
+        </div>
+    </div>
+    <div class="col-11">
+        <div class="container">
+            <div class="table-responsive">
+                <table id="tblInmuebles" class="table table-sm table-hover table-light text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Id</th>
+                            <th>Direccion</th>
+                            <th>Uso</th>
+                            <th>Tipo</th>
+                            <th>Ambientes</th>
+                            <th>Precio</th>
+                            <th>Ubicacion</th>
+                            <th>Propietario</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var inmueble in Model)
+                        {
+                            <tr>
+                                <td>@(inmueble.Id_inmueble)</td>
+                                <td>@(inmueble.Direccion)</td>
+                                <td>@(inmueble.Uso)</td>
+                                <td>@(inmueble?.Tipo?.Tipo)</td>
+                                <td>@(inmueble?.Cantidad_Ambientes)</td>
+                                <td>@(inmueble?.Precio_Alquiler)</td>
+                                <td><a href="https://www.google.com/maps/search/?api=1&amp;query=@inmueble?.Latitud,@inmueble?.Longitud"
+                                        target="_blank">
+                                        <i class="material-symbols-outlined">
+                                            home_pin
+                                        </i>
+                                    </a>
+                                </td>
+
+                                <td>@($"{inmueble?.Propietarios?.Nombre} {inmueble?.Propietarios?.Apellido}" ?? "")</td>
+                                <td name="Acciones">
+                                    <a class="material-symbols-outlined" asp-controller="Inmuebles"
+                                        asp-action="EditarInmueble" asp-route-Id="@inmueble?.Id_inmueble"
+                                        title="Editar Inmueble" asp-route-viewName="ListadoTodosInmuebles">edit_note</a>
+                                    <a class="material-symbols-outlined" title="Borrar Inmueble"
+                                        asp-action="EliminarInmueble" asp-route-id="@inmueble?.Id_inmueble"
+                                        style="cursor: pointer;">delete</a>
+                                    <a class="material-symbols-outlined" asp-controller="Inmuebles"
+                                        asp-action="DetallesInmueble" asp-route-Id="@inmueble?.Id_inmueble"
+                                        title="Detalles Inmueble">visibility</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<script src="/js/DataTable.js" asp-append-version="true"></script>
+<script src="/js/BuscarInmuebles.js" asp-append-version="true"></script>

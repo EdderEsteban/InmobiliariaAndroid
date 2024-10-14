@@ -1,0 +1,125 @@
+@model Inmuebles
+@{
+    ViewData["Title"] = "Editar Inmueble";
+    var listaTipos = (IList<InmuebleTipo>)ViewBag.tipos;
+    var listaPropietarios = (IList<Propietarios>)ViewBag.propietarios;
+}
+
+<div class="text-center mb-4">
+    <h2 class="display-4">Editar Inmueble</h2>
+</div>
+
+<div class="container col-8">
+    <h4>Modificar Inmueble</h4>
+    <form method="post" asp-action="ModificarInmueble">
+        <!-- Agregar campos ocultos para almacenar el Id-->
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Id_inmueble" />
+        
+        <div class="row mt-3">
+            <div class="form-floating mb-3 col-6">
+                <input asp-for="Direccion" class="form-control" placeholder="" />
+                <label asp-for="Direccion" class="control-label">Direccion</label>
+                <span asp-validation-for="Direccion" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3 col-6">
+                <select asp-for="Uso" class="form-control">
+                    <option default value="Comercial">Seleccione Uso</option>
+                    <option value="Comercial">Comercial</option>
+                    <option value="Residencial">Residencial</option>
+                </select>
+                <label asp-for="Uso" class="control-label">Uso</label>
+                <span asp-validation-for="Uso" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="form-floating mb-3 col-6">
+                <select name="Id_tipo" class="form-control" id="listTipo">
+
+                    @foreach (var tipo in listaTipos)
+                    {
+                        if (tipo.Id_tipo == Model.Id_tipo)
+                        {
+                            <option value="@tipo.Id_tipo" selected>@tipo.Tipo</option>
+                        }
+                        else
+                        {
+                            <option value="@tipo.Id_tipo">@tipo.Tipo</option>
+                        }
+                    }
+                </select>
+                <label asp-for="Id_tipo" class="control-label">Tipo</label>
+            </div>
+            <div class="form-floating mb-3 col-6">
+                <input asp-for="Cantidad_Ambientes" class="form-control" type="number" placeholder="" />
+                <label asp-for="Cantidad_Ambientes" class="control-label">Cantidad de Ambientes</label>
+                <span asp-validation-for="Cantidad_Ambientes" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="form-floating mb-3 col-6">
+                <input asp-for="Precio_Alquiler" class="form-control" placeholder="" />
+                <label asp-for="Precio_Alquiler" class="control-label">Precio</label>
+                <span asp-validation-for="Precio_Alquiler" class="text-danger"></span>
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group col-6">
+                            <label asp-for="Activo" class="control-label">Activo</label>
+                            <div class="form-check form-switch">
+                                <input asp-for="Activo" class="form-check-input" type="checkbox" id="switchActivo" />
+                                <label class="form-check-label" for="switchActivo"></label>
+                            </div>
+                            <span asp-validation-for="Activo" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group col-6">
+                            <label asp-for="Disponible" class="control-label">Disponible</label>
+                            <div class="form-check form-switch">
+                                <input asp-for="Disponible" class="form-check-input" type="checkbox"
+                                    id="switchDisponible" />
+                                <label class="form-check-label" for="switchDisponible"></label>
+                            </div>
+                            <span asp-validation-for="Disponible" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="form-floating mb-3 col-6">
+                <input asp-for="Latitud" class="form-control" placeholder="" />
+                <label asp-for="Latitud" class="control-label">Latitud</label>
+                <span asp-validation-for="Latitud" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3 col-6">
+                <input asp-for="Longitud" class="form-control" placeholder="" />
+                <label asp-for="Longitud" class="control-label">Longitud</label>
+                <span asp-validation-for="Longitud" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="form-floating mb-3 col-6">
+                <select name="Id_propietario" class="form-control" id="listPropietario">
+                    @foreach (var propietario in listaPropietarios)
+                    {
+                        if (propietario.Id_Propietario == Model.Id_propietario)
+                        {
+                            <option value="@propietario.Id_Propietario" selected>@propietario.Nombre</option>
+                        }
+                        else
+                        {
+                            <option value="@propietario.Id_Propietario">@propietario.Nombre</option>
+                        }
+                    }
+                </select>
+                <label asp-for="Id_propietario" class="control-label">Propietario</label>
+            </div>
+            <div class="form-group mt-2 col-6 text-center">
+                <input type="submit" value="Guardar" class="btn btn-success w-25 mx-2" />
+                <a asp-action="ListadoTodosInmuebles" class="btn btn-primary w-25 mx-2">Volver</a>
+            </div>
+        </div>
+</form>

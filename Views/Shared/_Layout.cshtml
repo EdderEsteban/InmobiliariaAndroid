@@ -1,0 +1,332 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Inmobiliaria</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Inmobiliaria.styles.css" asp-append-version="true" />
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Libreria de iconos -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <!-- CSS de Tom Select -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+
+
+
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="material-symbols-outlined">apartment</i>Inmobiliaria</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+                        class="navbar-toggler-icon"></span>
+                </button>
+                @if (User.IsInRole("Administrador")){
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">
+                                    <i class="material-symbols-outlined">home</i>Inicio</a>
+                            </li>
+                            <!-- Propietarios -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="material-symbols-outlined">person_pin_circle</i>Propietario</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Propietarios"
+                                            asp-action="ListadoPropietarios">Listado</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Propietarios"
+                                            asp-action="CrearPropietario">Nuevo Propietario</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Propietarios"
+                                            asp-action="BuscarPropietarios">Buscar Propietario</a></li>
+                                </ul>
+                            </li>
+                            <!-- Inquilinos -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="material-symbols-outlined">location_away</i>Inquilino</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Inquilinos"
+                                            asp-action="ListadoInquilinos">Listado</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Inquilinos"
+                                            asp-action="CrearInquilino">Nuevo Inquilino</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Inquilinos"
+                                            asp-action="BuscarInquilinos">Buscar Inquilino</a></li>
+                                </ul>
+                            </li>
+                            <!-- Inmuebles -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="material-symbols-outlined">real_estate_agent</i>Inmuebles</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Inmuebles"
+                                            asp-action="ListadoTodosInmuebles">Listado de Inmuebles</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Inmuebles"
+                                            asp-action="ListarTiposInmueble">Listado de Tipos</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Inmuebles"
+                                            asp-action="CrearInmueble">Nuevo Inmueble</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Inmuebles"
+                                            asp-action="BuscarInmuebles">Buscar Inmuebles</a></li>
+                                </ul>
+                            </li>
+                            <!-- Contratos -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="material-symbols-outlined">fact_check</i>Contratos</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Contratos"
+                                            asp-action="ListadoContratos">Listado de Contratos</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Contratos"
+                                            asp-action="CrearContrato">Nuevo Contrato</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Contratos"
+                                            asp-action="BuscarContratos">Buscar Contratos</a></li>
+                                </ul>
+                            </li>
+                            <!-- Pagos -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="material-symbols-outlined">paid</i>Pagos</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Pago"
+                                            asp-action="ListadoPagos">Listado de Pagos</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Pago"
+                                            asp-action="BuscarInquilinoPago">Nuevo Pago</a></li>
+                                </ul>
+                            </li>
+                            <!-- Usuarios -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="material-symbols-outlined">person</i>Usuarios</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Usuarios"
+                                            asp-action="ListadoUsuarios">Listado de Usuarios</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Usuarios"
+                                            asp-action="CrearUsuario">Nuevo Usuario</a></li>
+                                </ul>
+                            </li>
+                            <!-- Login Perfil-->
+                            <li class="nav-item dropdown ms-5">
+                                <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="material-symbols-outlined">manage_accounts</i>Perfil</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Usuarios"
+                                            asp-action="EditarUsuario"
+                                            asp-route-id="@User.FindFirst("UserId")?.Value">Modificar mis Datos</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Usuarios"
+                                            asp-action="Logout">Logout</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                }else if (User.IsInRole("Empleado")){
+                    {
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">
+                                    <i class="material-symbols-outlined">home</i>Inicio</a>
+                            </li>
+                            <!-- Propietarios -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="material-symbols-outlined">person_pin_circle</i>Propietario</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Propietarios"
+                                            asp-action="ListadoPropietarios">Listado</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Propietarios"
+                                            asp-action="CrearPropietario">Nuevo Propietario</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Propietarios"
+                                            asp-action="BuscarPropietarios">Buscar Propietario</a></li>
+                                </ul>
+                            </li>
+                            <!-- Inquilinos -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="material-symbols-outlined">location_away</i>Inquilino</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Inquilinos"
+                                            asp-action="ListadoInquilinos">Listado</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Inquilinos"
+                                            asp-action="CrearInquilino">Nuevo Inquilino</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Inquilinos"
+                                            asp-action="BuscarInquilinos">Buscar Inquilino</a></li>
+                                </ul>
+                            </li>
+                            <!-- Inmuebles -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="material-symbols-outlined">real_estate_agent</i>Inmuebles</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Inmuebles"
+                                            asp-action="ListadoTodosInmuebles">Listado de Inmuebles</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Inmuebles"
+                                            asp-action="CrearInmueble">Nuevo Inmueble</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Inmuebles"
+                                            asp-action="BuscarInmuebles">Buscar Inmuebles</a></li>
+                                </ul>
+                            </li>
+                            <!-- Contratos -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="material-symbols-outlined">fact_check</i>Contratos</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Contratos"
+                                            asp-action="ListadoContratos">Listado de Contratos</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Contratos"
+                                            asp-action="CrearContrato">Nuevo Contrato</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Contratos"
+                                            asp-action="BuscarContratos">Buscar Contratos</a></li>
+                                </ul>
+                            </li>
+                            <!-- Pagos -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="material-symbols-outlined">paid</i>Pagos</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Pago"
+                                            asp-action="ListadoPagos">Listado de Pagos</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Pago"
+                                            asp-action="BuscarInquilinoPago">Nuevo Pago</a></li>
+                                </ul>
+                            </li>
+                            <!-- Login Perfil-->
+                            <li class="nav-item dropdown ms-5">
+                                <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="material-symbols-outlined">manage_accounts</i>Perfil</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Usuarios"
+                                            asp-action="EditarUsuario"
+                                            asp-route-id="@User.FindFirst("UserId")?.Value">Modificar mis Datos</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-black" asp-area="" asp-controller="Usuarios"
+                                            asp-action="Logout">Logout</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                }
+                }
+            </div>
+        </nav>
+    </header>
+
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <!--Tom Select JS -->
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

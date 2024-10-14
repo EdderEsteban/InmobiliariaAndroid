@@ -1,0 +1,88 @@
+@model Inmuebles
+
+@{
+    ViewData["Title"] = "Detalles Inmueble";
+    var contrato = ViewBag.contrato;
+    var propietario = ViewBag.propietario;
+    var inquilino = ViewBag.inquilino;
+}
+
+<div class="text-center ">
+    <h1 class="display-4">Detalle del Inmueble</h1>
+    <table class="table table-sm table-striped table-hover">
+    <tr>
+        <th>Id</th>
+        <th>Direccion</th>
+        <th>Tipo</th>
+        <th>Ambientes</th>
+        <th>Precio</th>
+        <th>N° Contrato</th>
+        <th>Monto del Contrato</th>
+        <th>Ubicacion</th>
+        <th>Propietario</th>
+        <th>Inquilino</th>
+        <th>Activo</th>
+        <th>Disponible</th>
+        <th>Acciones</th>
+    </tr>
+    <tr>
+        <td>@(Model.Id_inmueble)</td>
+        <td>@(Model.Direccion)</td>
+        <td>@(Model?.Tipo?.Tipo)</td>
+        <td>@(Model?.Cantidad_Ambientes)</td>
+        <td>@(Model?.Precio_Alquiler)</td>
+        <td>@((contrato != null) ? contrato.Id_contrato : "Este Inmueble no tiene Contrato.")</td>
+        <td>@((contrato != null) ? contrato.Monto : "Este Inmueble no tiene Contrato.")</td>
+        <td>
+            <a href="https://www.google.com/maps/search/?api=1&amp;query=@Model?.Latitud,@Model?.Longitud"
+                target="_blank">
+                <span class="material-symbols-outlined">
+                    home_pin
+                </span>
+            </a>
+        </td>
+        <td>@(propietario.Nombre) @(propietario.Apellido)</td>
+        <td>@((inquilino != null) ? inquilino.Nombre + " " + inquilino.Apellido : "Este Inmueble no tiene Inquilino.")</td>
+        <td> @* Condicional switch para saber si esta activo o no *@
+                @if (Model?.Activo == true)
+                {
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="switchActivo-@Model.Id_inmueble" checked disabled>
+                        <label class="form-check-label" for="switchActivo-@Model.Id_inmueble"></label>
+                    </div>
+                }
+                else
+                {
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="switchActivo-@Model.Id_inmueble" disabled>
+                        <label class="form-check-label" for="switchActivo-@Model.Id_inmueble"></label>
+                    </div>
+                }
+            </td>
+            <td>
+                @if (Model?.Disponible == true)
+                {
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="switchDisponible-@Model.Id_inmueble" checked disabled>
+                        <label class="form-check-label" for="switchDisponible-@Model.Id_inmueble"></label>
+                    </div>
+                }
+                else
+                {
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="switchDisponible-@Model.Id_inmueble" disabled>
+                        <label class="form-check-label" for="switchDisponible-@Model.Id_inmueble"></label>
+                    </div>
+                }
+            </td>
+
+        <td>
+            <a class="material-symbols-outlined" asp-controller="Inmuebles" asp-action="EditarInmueble"
+                                    asp-route-Id="@Model.Id_inmueble" title="Editar Inmueble"
+                                    asp-route-viewName="ListadoTodosInmuebles">edit_note</a>
+        </td>
+    </tr>
+
+</table>
+<a asp-action="ListadoTodosInmuebles" class="btn btn-primary">Volver</a>
+</div>

@@ -1,0 +1,44 @@
+@model InmuebleTipo
+
+@{
+    ViewData["Title"] = "Inmueble";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="text-center mb-4">
+    <h2 class="display-4">Crear Tipo</h2>
+</div>
+
+<div class="container col-6">
+    <div class="card">
+        <div class="card-body">
+            <form class="form">
+                <div class="form-floating mb-3">
+                    <input  class="form-control" placeholder="" id="Tipo" />
+                    <label asp-for="Tipo" class="control-label">Tipo</label>
+                    <span  class="text-danger"></span>
+                </div>
+                <div class="form-group text-center mt-3">
+                    <input type="button" id="btnGuardar" value="Guardar" class="btn btn-success w-25 mx-2" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="/js/EnviarTipoInmueble.js" asp-append-version="true"></script>
