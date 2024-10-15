@@ -4,9 +4,10 @@ namespace Inmobiliaria.Models;
 
 public class Pago
 {
+    [Key]
     public int Id_Pago { get; set; }
 
-    public int Id_Contrato { get; set; }
+    public int Id_Contrato { get; set; } 
 
     public Inquilinos? Inquilino { get; set; }
     public int Id_Inquilino { get; set; }

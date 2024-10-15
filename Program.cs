@@ -1,7 +1,9 @@
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Inmobiliaria.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,39 +12,57 @@ builder.Services.AddControllersWithViews();
 var configuration = builder.Configuration;
 
 /* PARA MySql - usando Pomelo */
-builder.Services.AddDbContext<DataContext>(
-    options => options.UseMySql(
+builder.Services.AddDbContext<DataContext>(options =>
+    options.UseMySql(
         configuration["ConnectionStrings:DefaultConnection"],
         ServerVersion.AutoDetect(configuration["ConnectionStrings:DefaultConnection"])
-        )
-    );
+    )
+);
 
 // Servicio de Autenticación
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-	.AddCookie(options =>//el sitio web valida con cookie
-	{
-		options.LoginPath = "/Usuarios/Login";
-		options.LogoutPath = "/Usuarios/Logout";
-		options.AccessDeniedPath = "/Home/Restringido";
-		options.ExpireTimeSpan = TimeSpan.FromMinutes(5);//Tiempo de expiración
-	});
+builder
+    .Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options => //el sitio web valida con cookie
+    {
+        options.LoginPath = "/Usuarios/Login";
+        options.LogoutPath = "/Usuarios/Logout";
+        options.AccessDeniedPath = "/Home/Restringido";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(5); //Tiempo de expiración
+    })
+    .AddJwtBearer(options => //la api web valida con token
+    {
+        options.TokenValidationParameters =
+            new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = configuration["TokenAuthentication:Issuer"],
+                ValidAudience = configuration["TokenAuthentication:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    System.Text.Encoding.ASCII.GetBytes(
+                        configuration["TokenAuthentication:SecretKey"]
+                    )
+                ),
+            };
+    });
 
-    // Políticas de Autorización
+// Políticas de Autorización
 builder.Services.AddAuthorization(options =>
 {
     // Política para Administradores
-    options.AddPolicy("Administrador", policy =>
-        policy.RequireClaim(ClaimTypes.Role, "Administrador"));
+    options.AddPolicy(
+        "Administrador",
+        policy => policy.RequireClaim(ClaimTypes.Role, "Administrador")
+    );
 
     // Política para Empleados
-    options.AddPolicy("Empleado", policy =>
-        policy.RequireClaim(ClaimTypes.Role, "Empleado"));
+    options.AddPolicy("Empleado", policy => policy.RequireClaim(ClaimTypes.Role, "Empleado"));
 
     // Política combinada para Administradores y Empleados
-    options.AddPolicy("Propietario", policy =>
-        policy.RequireClaim(ClaimTypes.Role, "Propietario"));
+    options.AddPolicy("Propietario", policy => policy.RequireClaim(ClaimTypes.Role, "Propietario"));
 });
-
 
 var app = builder.Build();
 
@@ -57,10 +77,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 // Habilitar CORS para recibir todas las solicitudes
-app.UseCors(x => x
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader());
+app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 // app para usar archivos estáticos (cargar las imagenes)
 app.UseStaticFiles();

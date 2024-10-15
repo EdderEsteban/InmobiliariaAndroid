@@ -11,7 +11,11 @@ namespace Inmobiliaria.Models
 
         [Required(ErrorMessage = "Contraseña requerida")]
         [DataType(DataType.Password)]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "La contraseña debe tener al menos 6 caracteres.")]
+        [StringLength(
+            100,
+            MinimumLength = 6,
+            ErrorMessage = "La contraseña debe tener al menos 6 caracteres."
+        )]
         public string? Password { get; set; }
     }
 }

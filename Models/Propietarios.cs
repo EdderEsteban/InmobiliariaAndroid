@@ -32,9 +32,13 @@ public class Propietarios
     [EmailAddress(ErrorMessage = "El campo Correo no tiene un formato de dirección de correo electrónico válido.")]
     public string? Correo { get; set; }
 
-    public int Id_usuario { get; set; }
+    public String? Contraseña {get;set;}
+    
+    public String? Avatar{get; set;}
 
-    public DateTime Fecha { get; set; } = DateTime.Now;
+    public int? Id_usuario { get; set; }
+
+    public DateTime? Fecha { get; set; } = DateTime.Now;
 
     public Propietarios()
     {
