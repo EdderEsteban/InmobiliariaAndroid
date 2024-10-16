@@ -62,14 +62,17 @@ public class ApiPropietariosController : ControllerBase
 
     //------------------------------------------------------------- Metodos o Verbos -------------------------------------------------------------//
 
-    // POST: api/ApyPropietarios/Apilogin
     [HttpPost("ApiLogin")]
     [AllowAnonymous]
     public IActionResult ApiLogin([FromForm] LoginView loginView)
     {
-        Console.WriteLine($"Login {loginView.Email} {loginView.Password}");
+        // Buscar al propietario por correo
+        var propietario = contexto.Propietario.FirstOrDefault(prop => prop.Correo == loginView.Email);
 
-        var propietario = contexto.Propietario.FirstOrDefault(x => x.Correo == loginView.Email);
+        if (propietario == null)
+        {
+            return BadRequest("El correo no está registrado.");
+        }
 
         // Hash de la contraseña ingresada
         string hashedPassword = Convert.ToBase64String(
@@ -84,7 +87,7 @@ public class ApiPropietariosController : ControllerBase
 
         if (propietario.Contraseña != hashedPassword)
         {
-            return BadRequest("Contraseña incorrecta");
+            return BadRequest("Contraseña incorrecta.");
         }
 
         // Generación del token JWT
@@ -94,11 +97,11 @@ public class ApiPropietariosController : ControllerBase
 
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, propietario.Correo),
-            new Claim("FullName", propietario.Nombre + " " + propietario.Apellido),
-            new Claim(ClaimTypes.Role, "Propietario")
-        };
+    {
+        new Claim(ClaimTypes.Name, propietario.Correo),
+        new Claim("FullName", propietario.Nombre + " " + propietario.Apellido),
+        new Claim(ClaimTypes.Role, "Propietario")
+    };
 
         var token = new JwtSecurityToken(
             issuer: configuration["TokenAuthentication:Issuer"],
@@ -110,6 +113,7 @@ public class ApiPropietariosController : ControllerBase
 
         return Ok(new JwtSecurityTokenHandler().WriteToken(token));
     }
+
 
     // GET: api/ApyPropietarios/AllPropietarios
     [HttpGet("AllPropietarios")]
@@ -130,12 +134,14 @@ public class ApiPropietariosController : ControllerBase
         }
     }
 
-    // POST: api/ApyPropietarios/NewPropietario
-    [HttpPost]
+    // POST: api/ApiPropietarios/NewPropietario
+    [HttpPost("NewPropietario")]
+    [AllowAnonymous]
     public async Task<IActionResult> NewPropietario([FromForm] Propietarios propietario)
     {
         try
         {
+            Console.WriteLine("entrando a crear un nuevo propietario");
             // Hash de la contraseña antes de guardar
             propietario.Contraseña = Convert.ToBase64String(
                 KeyDerivation.Pbkdf2(
@@ -162,7 +168,7 @@ public class ApiPropietariosController : ControllerBase
     }
 
     // GET: api/ApyPropietarios/SearchPropietario/{id}
-    [HttpGet("{id}")]
+    [HttpGet("SearchPropietario/{id}")]
     public async Task<IActionResult> SearchPropietario(int id)
     {
         try
@@ -180,7 +186,7 @@ public class ApiPropietariosController : ControllerBase
     }
 
     // PUT: api/ApyPropietarios/UpdatePropietario/{id}
-    [HttpPut("{id}")]
+    [HttpPut("UpdatePropietario/{id}")]//aca voy controlando
     public async Task<IActionResult> UpdatePropietario(int id, [FromForm] Propietarios propietario)
     {
         var propietarioExistente = await contexto.Propietario.FindAsync(id);
