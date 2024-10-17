@@ -47,15 +47,17 @@ public class ApiPropietariosController : ControllerBase
     // Función auxiliar para enviar correos electrónicos
     private async Task EnviarCorreo(string destinatario, string asunto, string cuerpo)
     {
+        Console.WriteLine($"Enviando correo a: {destinatario} con el asunto: {asunto} y el cuerpo: {cuerpo}");
         var message = new MimeMessage();
         message.To.Add(new MailboxAddress("", destinatario));
-        message.From.Add(new MailboxAddress("Inmobiliaria", configuration["SMTPUser"]));
+        message.From.Add(new MailboxAddress("Inmobiliaria", configuration["SMTP:User"]));
         message.Subject = asunto;
         message.Body = new TextPart("html") { Text = cuerpo };
 
         using var client = new SmtpClient();
         client.Connect("smtp.gmail.com", 465, true);
-        client.Authenticate(configuration["SMTPUser"], configuration["SMTPPass"]);
+
+        client.Authenticate(configuration["SMTP:User"], configuration["SMTP:Pass"]); // SMTP:User: edder709@gmail.com, SMTP:Pass: axqz sxby ilqy vtih
         await client.SendAsync(message);
         client.Disconnect(true);
     }
@@ -117,76 +119,6 @@ public class ApiPropietariosController : ControllerBase
         return Ok(new JwtSecurityTokenHandler().WriteToken(token));
     }
 
-    // GET: api/ApiPropietarios/AllPropietarios
-    [HttpGet("AllPropietarios")] // Metodo al vicio
-    public async Task<IActionResult> AllPropietarios()
-    {
-        Console.WriteLine("entrando a llamar a todos los propietarios");
-        try
-        {
-            var propietarios = await contexto.Propietario.ToListAsync();
-            return Ok(propietarios);
-        }
-        catch (Exception ex)
-        {
-            // Agregar más detalles sobre el error
-            Console.WriteLine($"Error: {ex.Message}");
-            Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-            return BadRequest($"Exception: {ex.Message}");
-        }
-    }
-
-    // POST: api/ApiPropietarios/NewPropietario
-    [HttpPost("NewPropietario")] // al vicio
-    [AllowAnonymous]
-    public async Task<IActionResult> NewPropietario([FromForm] Propietarios propietario)
-    {
-        try
-        {
-            Console.WriteLine("entrando a crear un nuevo propietario");
-            // Hash de la contraseña antes de guardar
-            propietario.Contraseña = Convert.ToBase64String(
-                KeyDerivation.Pbkdf2(
-                    password: propietario.Contraseña,
-                    salt: System.Text.Encoding.ASCII.GetBytes(configuration["Salt"]),
-                    prf: KeyDerivationPrf.HMACSHA1,
-                    iterationCount: 1000,
-                    numBytesRequested: 256 / 8
-                )
-            );
-
-            contexto.Propietario.Add(propietario);
-            await contexto.SaveChangesAsync();
-            return CreatedAtAction(
-                nameof(NewPropietario),
-                new { id = propietario.Id_Propietario },
-                propietario
-            );
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-
-    // GET: api/ApiPropietarios/SearchPropietario/{id}
-    [HttpGet("SearchPropietario/{id}")]
-    public async Task<IActionResult> SearchPropietario(int id)
-    {
-        try
-        {
-            var propietario = await contexto.Propietario.FindAsync(id);
-            if (propietario == null)
-                return NotFound();
-
-            return Ok(propietario);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-
     // GET: api/ApiPropietarios/MyPropietario
     [HttpGet("MyPropietario")]
     public async Task<IActionResult> MyPropietario()
@@ -219,45 +151,8 @@ public class ApiPropietariosController : ControllerBase
         }
     }
 
-    // PUT: api/ApiPropietarios/UpdatePropietario/{id}
-    [HttpPut("UpdatePropietario/{id}")] //aca voy controlando
-    public async Task<IActionResult> UpdatePropietario(int id, [FromForm] Propietarios propietario)
-    {
-        var propietarioExistente = await contexto.Propietario.FindAsync(id);
-        if (propietarioExistente == null)
-        {
-            return NotFound("Propietario no encontrado");
-        }
-
-        // Actualizamos solo los campos que deben cambiar
-        propietarioExistente.Nombre = propietario.Nombre;
-        propietarioExistente.Apellido = propietario.Apellido;
-        propietarioExistente.Telefono = propietario.Telefono;
-        propietarioExistente.Correo = propietario.Correo;
-
-        // Solo actualizar la contraseña si fue proporcionada
-        if (!string.IsNullOrEmpty(propietario.Contraseña))
-        {
-            propietarioExistente.Contraseña = Convert.ToBase64String(
-                KeyDerivation.Pbkdf2(
-                    password: propietario.Contraseña,
-                    salt: System.Text.Encoding.ASCII.GetBytes(configuration["Salt"]),
-                    prf: KeyDerivationPrf.HMACSHA1,
-                    iterationCount: 1000,
-                    numBytesRequested: 256 / 8
-                )
-            );
-        }
-
-        contexto.Propietario.Update(propietarioExistente);
-        await contexto.SaveChangesAsync();
-
-        return Ok(propietarioExistente);
-    }
-
     // PUT: api/ApiPropietarios/UpdatePropietario
     [HttpPut("UpdatePropietario")]
-    [Authorize] // Requiere que el usuario esté autenticado
     public async Task<IActionResult> UpdatePropietario([FromForm] Propietarios propietario)
     {
         try
@@ -314,36 +209,22 @@ public class ApiPropietariosController : ControllerBase
         }
     }
 
-    // DELETE: api/ApiPropietarios/DellPropietario/{id}
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DellPropietario(int id)
+    // PUT: api/ApiPropietarios/ActualizarFoto
+    [HttpPut("ActualizarFoto")]
+    public async Task<IActionResult> ActualizarFoto([FromForm] IFormFile foto)
     {
-        var propietario = await contexto.Propietario.FindAsync(id);
-        if (propietario == null)
-        {
-            return NotFound("Propietario no encontrado");
-        }
-
-        contexto.Propietario.Remove(propietario);
-        await contexto.SaveChangesAsync();
-
-        return Ok($"Propietario con id {id} eliminado correctamente");
-    }
-
-    // PUT: api/ApiPropietarios/ActualizarFoto/{id}
-    [HttpPut("ActualizarFoto/{id}")]
-    public async Task<IActionResult> ActualizarFoto(int id, [FromForm] IFormFile foto)
-    {
-        var propietario = await contexto.Propietario.FindAsync(id);
+        var userEmail = User.Identity?.Name;
+        var propietario = await contexto.Propietario.FirstOrDefaultAsync(x => x.Correo == userEmail);
         if (propietario == null)
             return NotFound("Propietario no encontrado");
 
         if (foto == null || foto.Length == 0)
             return BadRequest("No se subió ninguna foto");
 
+        // Guardar la imagen en la carpeta Uploads
         string wwwPath = environment.WebRootPath;
-        string fileName = $"fotoperfil{id}{Path.GetExtension(foto.FileName)}";
-        string path = Path.Combine(wwwPath, "fotos", fileName);
+        string fileName = $"fotoperfil{propietario.Id_Propietario}{Path.GetExtension(foto.FileName)}";
+        string path = Path.Combine(wwwPath, "/Uploads", fileName);
 
         using (var stream = new FileStream(path, FileMode.Create))
         {
@@ -357,37 +238,90 @@ public class ApiPropietariosController : ControllerBase
         return Ok(propietario);
     }
 
-    // POST: api/ApiPropietarios/ResetPassword
-    [HttpPost("ResetPassword")]
-    [AllowAnonymous]
-    public async Task<IActionResult> ResetPassword([FromForm] string email)
+    // PUT: api/ApiPropietarios/ResetPassword
+    [HttpPut("ResetPassword")]
+    [AllowAnonymous]// borrar luego de las pruebas
+    public async Task<IActionResult> ResetPassword()
     {
-        var propietario = await contexto.Propietario.FirstOrDefaultAsync(x => x.Correo == email);
-        if (propietario == null)
-            return NotFound("Email no encontrado");
+        try
+        {
+            // Obtener el correo del usuario logueado desde el token JWT
+            var userEmail = User.Identity?.Name;
+            var propietario = await contexto.Propietario.FirstOrDefaultAsync(x => x.Correo == userEmail);
 
-        string nuevaClave = GenerarClaveAleatoria();
+            if (propietario == null)
+                return NotFound("Email no encontrado");
 
-        // Hash de la nueva contraseña
-        propietario.Contraseña = Convert.ToBase64String(
-            KeyDerivation.Pbkdf2(
-                password: nuevaClave,
-                salt: System.Text.Encoding.ASCII.GetBytes(configuration["Salt"]),
-                prf: KeyDerivationPrf.HMACSHA1,
-                iterationCount: 1000,
-                numBytesRequested: 256 / 8
-            )
-        );
+            string nuevaClave = GenerarClaveAleatoria();
+            Console.WriteLine($"La nueva clave es: {nuevaClave}");
+            // Hash de la nueva contraseña
+            propietario.Contraseña = Convert.ToBase64String(
+                KeyDerivation.Pbkdf2(
+                    password: nuevaClave,
+                    salt: System.Text.Encoding.ASCII.GetBytes(configuration["Salt"]),
+                    prf: KeyDerivationPrf.HMACSHA1,
+                    iterationCount: 1000,
+                    numBytesRequested: 256 / 8
+                )
+            );
+            Console.WriteLine($"El Propietario {propietario.Nombre} {propietario.Apellido} ha solicitado restablecer su contraseña y es {propietario.Contraseña} enviada al correo: {propietario.Correo}");
+            await contexto.SaveChangesAsync();
 
-        await contexto.SaveChangesAsync();
-
-        // Enviar correo con la nueva clave
-        await EnviarCorreo(
-            propietario.Correo,
-            "Restablecimiento de contraseña",
-            $"Su nueva clave es: {nuevaClave}"
-        );
-
+            // Enviar correo con la nueva clave
+            await EnviarCorreo(propietario.Correo, "Restablecimiento de contraseña", $"Su nueva clave es: {nuevaClave}");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
         return Ok("Se ha enviado un correo con la nueva clave");
     }
+
+    [HttpPut("UpdatePassword")]
+    public async Task<IActionResult> UpdatePassword([FromForm] string oldpass, [FromForm] string newpassword)
+    {
+        try
+        {
+            // Obtener el correo del usuario logueado desde el token JWT
+            var userEmail = User.Identity?.Name;
+            var propietario = await contexto.Propietario.FirstOrDefaultAsync(x => x.Correo == userEmail);
+            if (propietario == null)
+                return NotFound("Email no encontrado");
+
+            // Hash de la vieja contraseña
+            var oldpassword = Convert.ToBase64String(
+                KeyDerivation.Pbkdf2(
+                    password: oldpass,
+                    salt: System.Text.Encoding.ASCII.GetBytes(configuration["Salt"]),
+                    prf: KeyDerivationPrf.HMACSHA1,
+                    iterationCount: 1000,
+                    numBytesRequested: 256 / 8
+                )
+            );
+        
+        // Verificar si la clave anterior coincide
+        if (!oldpassword.Equals(propietario.Contraseña))
+                return BadRequest("La clave ingresada no coincide");
+
+            // Hash de la nueva contraseña
+            propietario.Contraseña = Convert.ToBase64String(
+                KeyDerivation.Pbkdf2(
+                    password: newpassword,
+                    salt: System.Text.Encoding.ASCII.GetBytes(configuration["Salt"]),
+                    prf: KeyDerivationPrf.HMACSHA1,
+                    iterationCount: 1000,
+                    numBytesRequested: 256 / 8
+                )
+            );
+
+            contexto.Propietario.Update(propietario);
+            await contexto.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        return Ok("Se ha actualizado la clave");
+    }
+
 }
