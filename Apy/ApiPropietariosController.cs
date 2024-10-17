@@ -62,12 +62,15 @@ public class ApiPropietariosController : ControllerBase
 
     //------------------------------------------------------------- Metodos o Verbos -------------------------------------------------------------//
 
+    // POST: api/ApiPropietarios/ApiLogin
     [HttpPost("ApiLogin")]
     [AllowAnonymous]
     public IActionResult ApiLogin([FromForm] LoginView loginView)
     {
         // Buscar al propietario por correo
-        var propietario = contexto.Propietario.FirstOrDefault(prop => prop.Correo == loginView.Email);
+        var propietario = contexto.Propietario.FirstOrDefault(prop =>
+            prop.Correo == loginView.Email
+        );
 
         if (propietario == null)
         {
@@ -97,11 +100,11 @@ public class ApiPropietariosController : ControllerBase
 
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.Name, propietario.Correo),
-        new Claim("FullName", propietario.Nombre + " " + propietario.Apellido),
-        new Claim(ClaimTypes.Role, "Propietario")
-    };
+        {
+            new Claim(ClaimTypes.Name, propietario.Correo),
+            new Claim("FullName", propietario.Nombre + " " + propietario.Apellido),
+            new Claim(ClaimTypes.Role, "Propietario")
+        };
 
         var token = new JwtSecurityToken(
             issuer: configuration["TokenAuthentication:Issuer"],
@@ -114,9 +117,8 @@ public class ApiPropietariosController : ControllerBase
         return Ok(new JwtSecurityTokenHandler().WriteToken(token));
     }
 
-
-    // GET: api/ApyPropietarios/AllPropietarios
-    [HttpGet("AllPropietarios")]
+    // GET: api/ApiPropietarios/AllPropietarios
+    [HttpGet("AllPropietarios")] // Metodo al vicio
     public async Task<IActionResult> AllPropietarios()
     {
         Console.WriteLine("entrando a llamar a todos los propietarios");
@@ -135,7 +137,7 @@ public class ApiPropietariosController : ControllerBase
     }
 
     // POST: api/ApiPropietarios/NewPropietario
-    [HttpPost("NewPropietario")]
+    [HttpPost("NewPropietario")] // al vicio
     [AllowAnonymous]
     public async Task<IActionResult> NewPropietario([FromForm] Propietarios propietario)
     {
@@ -167,7 +169,7 @@ public class ApiPropietariosController : ControllerBase
         }
     }
 
-    // GET: api/ApyPropietarios/SearchPropietario/{id}
+    // GET: api/ApiPropietarios/SearchPropietario/{id}
     [HttpGet("SearchPropietario/{id}")]
     public async Task<IActionResult> SearchPropietario(int id)
     {
@@ -185,8 +187,40 @@ public class ApiPropietariosController : ControllerBase
         }
     }
 
-    // PUT: api/ApyPropietarios/UpdatePropietario/{id}
-    [HttpPut("UpdatePropietario/{id}")]//aca voy controlando
+    // GET: api/ApiPropietarios/MyPropietario
+    [HttpGet("MyPropietario")]
+    public async Task<IActionResult> MyPropietario()
+    {
+        try
+        {
+            // Obtén el correo del usuario logueado desde los claims del token JWT
+            var userEmail = User.Identity?.Name;
+
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                return Unauthorized("Usuario no logueado.");
+            }
+
+            // Buscar al propietario por correo
+            var propietario = await contexto.Propietario.FirstOrDefaultAsync(p =>
+                p.Correo == userEmail
+            );
+
+            if (propietario == null)
+            {
+                return NotFound("Propietario no encontrado.");
+            }
+
+            return Ok(propietario);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
+    }
+
+    // PUT: api/ApiPropietarios/UpdatePropietario/{id}
+    [HttpPut("UpdatePropietario/{id}")] //aca voy controlando
     public async Task<IActionResult> UpdatePropietario(int id, [FromForm] Propietarios propietario)
     {
         var propietarioExistente = await contexto.Propietario.FindAsync(id);
@@ -221,7 +255,66 @@ public class ApiPropietariosController : ControllerBase
         return Ok(propietarioExistente);
     }
 
-    // DELETE: api/ApyPropietarios/DellPropietario/{id}
+    // PUT: api/ApiPropietarios/UpdatePropietario
+    [HttpPut("UpdatePropietario")]
+    [Authorize] // Requiere que el usuario esté autenticado
+    public async Task<IActionResult> UpdatePropietario([FromForm] Propietarios propietario)
+    {
+        try
+        {
+            // Obtener el correo del usuario logueado desde el token JWT
+            var userEmail = User.Identity?.Name;
+
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                return Unauthorized("Usuario no logueado.");
+            }
+
+            // Buscar al propietario actual por correo
+            var propietarioExistente = await contexto.Propietario.FirstOrDefaultAsync(p =>
+                p.Correo == userEmail
+            );
+            if (propietarioExistente == null)
+            {
+                return NotFound("Propietario no encontrado.");
+            }
+
+            // Actualizamos todos los campos que deben cambiar
+            propietarioExistente.Nombre = propietario.Nombre;
+            propietarioExistente.Apellido = propietario.Apellido;
+            propietarioExistente.Dni = propietario.Dni;
+            propietarioExistente.Direccion = propietario.Direccion;
+            propietarioExistente.Telefono = propietario.Telefono;
+            propietarioExistente.Correo = propietario.Correo;
+            propietarioExistente.Avatar = propietario.Avatar;
+
+            // Solo actualizar la contraseña si se proporcionó una nueva
+            if (!string.IsNullOrEmpty(propietario.Contraseña))
+            {
+                propietarioExistente.Contraseña = Convert.ToBase64String(
+                    KeyDerivation.Pbkdf2(
+                        password: propietario.Contraseña,
+                        salt: System.Text.Encoding.ASCII.GetBytes(configuration["Salt"]),
+                        prf: KeyDerivationPrf.HMACSHA1,
+                        iterationCount: 1000,
+                        numBytesRequested: 256 / 8
+                    )
+                );
+            }
+
+            // Guardamos los cambios
+            contexto.Propietario.Update(propietarioExistente);
+            await contexto.SaveChangesAsync();
+
+            return Ok(propietarioExistente);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
+    }
+
+    // DELETE: api/ApiPropietarios/DellPropietario/{id}
     [HttpDelete("{id}")]
     public async Task<IActionResult> DellPropietario(int id)
     {
@@ -237,7 +330,7 @@ public class ApiPropietariosController : ControllerBase
         return Ok($"Propietario con id {id} eliminado correctamente");
     }
 
-    // PUT: api/ApyPropietarios/ActualizarFoto/{id}
+    // PUT: api/ApiPropietarios/ActualizarFoto/{id}
     [HttpPut("ActualizarFoto/{id}")]
     public async Task<IActionResult> ActualizarFoto(int id, [FromForm] IFormFile foto)
     {
@@ -264,7 +357,7 @@ public class ApiPropietariosController : ControllerBase
         return Ok(propietario);
     }
 
-    // POST: api/ApyPropietarios/ResetPassword
+    // POST: api/ApiPropietarios/ResetPassword
     [HttpPost("ResetPassword")]
     [AllowAnonymous]
     public async Task<IActionResult> ResetPassword([FromForm] string email)

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Inmobiliaria.Models;
 
@@ -34,6 +35,7 @@ public class Propietarios
 
     public String? Contraseña {get;set;}
     
+    [NotMapped]
     public String? Avatar{get; set;}
 
     public int? Id_usuario { get; set; }
