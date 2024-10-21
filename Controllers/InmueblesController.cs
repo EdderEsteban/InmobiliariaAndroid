@@ -197,7 +197,7 @@ public class InmueblesController : Controller
 
         //Enviar el propietarios
         RepositorioPropietarios repoProp = new RepositorioPropietarios();
-        var propietario = repoProp.ObtenerPropietario(inmueble.Id_propietario);
+        var propietario = repoProp.ObtenerPropietario(inmueble?.Id_propietario ?? 0);
         ViewBag.propietario = propietario;
 
         //Enviar el Inquilino
@@ -296,7 +296,6 @@ public class InmueblesController : Controller
 
     // Metodo para Borrar un tipo de inmueble
     [Authorize(Policy = "Administrador")]
-    
     public IActionResult EliminarTipo(int id)
     {
         try

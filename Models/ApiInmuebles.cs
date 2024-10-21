@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Inmobiliaria.Models;
 
-public class Inmuebles
+public class ApiInmuebles
 {
     [Key]
     public int Id_inmueble { get; set; }
@@ -12,7 +12,7 @@ public class Inmuebles
     [StringLength(100, ErrorMessage = "El campo Dirección debe tener como máximo {1} caracteres.")]
     public string? Direccion { get; set; }
 
-    public UsoInmueble? Uso { get; set; } 
+    public int? Uso { get; set; } 
 
     [ForeignKey("Tipo")] 
     public int? Id_tipo { get; set; }
@@ -63,7 +63,7 @@ public class Inmuebles
     public bool Borrado { get; set; }
 }
 
-public enum UsoInmueble
+public enum UsoApiInmueble
 {
     Comercial = 1,
     Residencial = 2

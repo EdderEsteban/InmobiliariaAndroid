@@ -69,54 +69,61 @@ public class ApiPropietariosController : ControllerBase
     [AllowAnonymous]
     public IActionResult ApiLogin([FromForm] LoginView loginView)
     {
-        // Buscar al propietario por correo
-        var propietario = contexto.Propietario.FirstOrDefault(prop =>
-            prop.Correo == loginView.Email
-        );
-
-        if (propietario == null)
+        try
         {
-            return BadRequest("El correo no está registrado.");
-        }
+            // Buscar al propietario por correo
+            var propietario = contexto.Propietario.FirstOrDefault(prop =>
+                prop.Correo == loginView.Email
+            );
 
-        // Hash de la contraseña ingresada
-        string hashedPassword = Convert.ToBase64String(
-            KeyDerivation.Pbkdf2(
-                password: loginView.Password,
-                salt: System.Text.Encoding.ASCII.GetBytes(configuration["Salt"]),
-                prf: KeyDerivationPrf.HMACSHA1,
-                iterationCount: 1000,
-                numBytesRequested: 256 / 8
-            )
-        );
+            if (propietario == null)
+            {
+                return BadRequest("El correo no está registrado.");
+            }
 
-        if (propietario.Contraseña != hashedPassword)
+            // Hash de la contraseña ingresada
+            string hashedPassword = Convert.ToBase64String(
+                KeyDerivation.Pbkdf2(
+                    password: loginView.Password,
+                    salt: System.Text.Encoding.ASCII.GetBytes(configuration["Salt"]),
+                    prf: KeyDerivationPrf.HMACSHA1,
+                    iterationCount: 1000,
+                    numBytesRequested: 256 / 8
+                )
+            );
+
+            if (propietario.Contraseña != hashedPassword)
+            {
+                return BadRequest("Contraseña incorrecta.");
+            }
+
+            // Generación del token JWT
+            var key = new SymmetricSecurityKey(
+                System.Text.Encoding.ASCII.GetBytes(configuration["TokenAuthentication:SecretKey"])
+            );
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var claims = new List<Claim>
         {
-            return BadRequest("Contraseña incorrecta.");
-        }
-
-        // Generación del token JWT
-        var key = new SymmetricSecurityKey(
-            System.Text.Encoding.ASCII.GetBytes(configuration["TokenAuthentication:SecretKey"])
-        );
-
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var claims = new List<Claim>
-        {
+            new Claim(ClaimTypes.NameIdentifier, propietario.Id_Propietario.ToString()),
             new Claim(ClaimTypes.Name, propietario.Correo),
             new Claim("FullName", propietario.Nombre + " " + propietario.Apellido),
             new Claim(ClaimTypes.Role, "Propietario")
         };
 
-        var token = new JwtSecurityToken(
-            issuer: configuration["TokenAuthentication:Issuer"],
-            audience: configuration["TokenAuthentication:Audience"],
-            claims: claims,
-            expires: DateTime.Now.AddMinutes(60),
-            signingCredentials: creds
-        );
-
-        return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+            var token = new JwtSecurityToken(
+                issuer: configuration["TokenAuthentication:Issuer"],
+                audience: configuration["TokenAuthentication:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(60),
+                signingCredentials: creds
+            );
+            return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
     }
 
     // GET: api/ApiPropietarios/MyPropietario
@@ -278,7 +285,7 @@ public class ApiPropietariosController : ControllerBase
     }
 
     [HttpPut("UpdatePassword")]
-    public async Task<IActionResult> UpdatePassword([FromForm] string oldpass, [FromForm] string newpassword)
+    public async Task<IActionResult> UpdatePassword([FromForm] ApiChangePass apiChangePass)
     {
         try
         {
@@ -291,22 +298,22 @@ public class ApiPropietariosController : ControllerBase
             // Hash de la vieja contraseña
             var oldpassword = Convert.ToBase64String(
                 KeyDerivation.Pbkdf2(
-                    password: oldpass,
+                    password: apiChangePass.OldPassword,
                     salt: System.Text.Encoding.ASCII.GetBytes(configuration["Salt"]),
                     prf: KeyDerivationPrf.HMACSHA1,
                     iterationCount: 1000,
                     numBytesRequested: 256 / 8
                 )
             );
-        
-        // Verificar si la clave anterior coincide
-        if (!oldpassword.Equals(propietario.Contraseña))
+
+            // Verificar si la clave anterior coincide
+            if (!oldpassword.Equals(propietario.Contraseña))
                 return BadRequest("La clave ingresada no coincide");
 
             // Hash de la nueva contraseña
             propietario.Contraseña = Convert.ToBase64String(
                 KeyDerivation.Pbkdf2(
-                    password: newpassword,
+                    password: apiChangePass.NewPassword,
                     salt: System.Text.Encoding.ASCII.GetBytes(configuration["Salt"]),
                     prf: KeyDerivationPrf.HMACSHA1,
                     iterationCount: 1000,
