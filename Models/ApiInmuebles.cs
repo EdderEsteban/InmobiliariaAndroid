@@ -12,7 +12,7 @@ public class ApiInmuebles
     [StringLength(100, ErrorMessage = "El campo Dirección debe tener como máximo {1} caracteres.")]
     public string? Direccion { get; set; }
 
-    public int? Uso { get; set; } 
+    public string? Uso { get; set; } 
 
     [ForeignKey("Tipo")] 
     public int? Id_tipo { get; set; }

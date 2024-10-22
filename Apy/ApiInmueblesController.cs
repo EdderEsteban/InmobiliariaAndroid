@@ -60,21 +60,8 @@ public class ApiInmueblesController : ControllerBase
 
             // Obtener los inmuebles del propietario
             var inmuebles = await contexto.Inmueble
-                
+                .Include(t => t.Tipo)
                 .Where(i => i.Id_propietario == propietarioId)
-                .Select(i => new Inmuebles
-                {
-                    Id_inmueble = i.Id_inmueble,
-                    Direccion = i.Direccion,
-                    Uso = ParseUso(i.Uso.ToString()),
-                    Id_tipo = i.Id_tipo,
-                    Cantidad_Ambientes = i.Cantidad_Ambientes,
-                    Precio_Alquiler = i.Precio_Alquiler,
-                    Latitud = i.Latitud,
-                    Longitud = i.Longitud,
-                    Activo = i.Activo,
-                    Disponible = i.Disponible
-                })
                 .ToListAsync();
  
             return Ok(inmuebles);

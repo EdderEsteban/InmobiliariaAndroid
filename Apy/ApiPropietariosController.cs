@@ -246,7 +246,7 @@ public class ApiPropietariosController : ControllerBase
     }
 
     // PUT: api/ApiPropietarios/ResetPassword
-    [HttpPut("ResetPassword")]
+    [HttpPut("ResetPassword")] // Corregir 
     [AllowAnonymous]
     public async Task<IActionResult> ResetPassword([FromForm] String mail)
     {
