@@ -247,13 +247,13 @@ public class ApiPropietariosController : ControllerBase
 
     // PUT: api/ApiPropietarios/ResetPassword
     [HttpPut("ResetPassword")]
-    [AllowAnonymous]// borrar luego de las pruebas
-    public async Task<IActionResult> ResetPassword()
+    [AllowAnonymous]
+    public async Task<IActionResult> ResetPassword([FromForm] String mail)
     {
         try
         {
-            // Obtener el correo del usuario logueado desde el token JWT
-            var userEmail = User.Identity?.Name;
+            // Enviamos el Mail y verificamos si existe
+            var userEmail = mail;
             var propietario = await contexto.Propietario.FirstOrDefaultAsync(x => x.Correo == userEmail);
 
             if (propietario == null)
@@ -271,7 +271,7 @@ public class ApiPropietariosController : ControllerBase
                     numBytesRequested: 256 / 8
                 )
             );
-            Console.WriteLine($"El Propietario {propietario.Nombre} {propietario.Apellido} ha solicitado restablecer su contraseña y es {propietario.Contraseña} enviada al correo: {propietario.Correo}");
+            
             await contexto.SaveChangesAsync();
 
             // Enviar correo con la nueva clave
