@@ -61,6 +61,9 @@ public class ApiInmuebles
     public DateTime? Fecha { get; set; } = DateTime.Now;
 
     public bool Borrado { get; set; }
+
+    // Relación con FotosInmueble (uno a muchos)
+    public List<FotosInmueble> Fotos { get; set; }
 }
 
 public enum UsoApiInmueble

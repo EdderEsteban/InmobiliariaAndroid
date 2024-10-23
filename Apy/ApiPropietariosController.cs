@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MimeKit;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Inmobiliaria.Controllers;
 
@@ -21,16 +22,19 @@ public class ApiPropietariosController : ControllerBase
     private readonly DataContext contexto;
     private readonly IConfiguration configuration;
     private readonly IWebHostEnvironment environment;
+    private readonly IMemoryCache cache;
 
     public ApiPropietariosController(
         DataContext contexto,
         IConfiguration config,
-        IWebHostEnvironment env
+        IWebHostEnvironment env,
+        IMemoryCache cache
     )
     {
         this.contexto = contexto;
         this.configuration = config;
         this.environment = env;
+        this.cache = cache;
     }
 
     //------------------------------------------------------------- FUNCIONES AUXILIARES -------------------------------------------------------------//
@@ -245,45 +249,7 @@ public class ApiPropietariosController : ControllerBase
         return Ok(propietario);
     }
 
-    // PUT: api/ApiPropietarios/ResetPassword
-    [HttpPut("ResetPassword")] // Corregir 
-    [AllowAnonymous]
-    public async Task<IActionResult> ResetPassword([FromForm] String mail)
-    {
-        try
-        {
-            // Enviamos el Mail y verificamos si existe
-            var userEmail = mail;
-            var propietario = await contexto.Propietario.FirstOrDefaultAsync(x => x.Correo == userEmail);
-
-            if (propietario == null)
-                return NotFound("Email no encontrado");
-
-            string nuevaClave = GenerarClaveAleatoria();
-            Console.WriteLine($"La nueva clave es: {nuevaClave}");
-            // Hash de la nueva contraseña
-            propietario.Contraseña = Convert.ToBase64String(
-                KeyDerivation.Pbkdf2(
-                    password: nuevaClave,
-                    salt: System.Text.Encoding.ASCII.GetBytes(configuration["Salt"]),
-                    prf: KeyDerivationPrf.HMACSHA1,
-                    iterationCount: 1000,
-                    numBytesRequested: 256 / 8
-                )
-            );
-            
-            await contexto.SaveChangesAsync();
-
-            // Enviar correo con la nueva clave
-            await EnviarCorreo(propietario.Correo, "Restablecimiento de contraseña", $"Su nueva clave es: {nuevaClave}");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        return Ok("Se ha enviado un correo con la nueva clave");
-    }
-
+    
     [HttpPut("UpdatePassword")]
     public async Task<IActionResult> UpdatePassword([FromForm] ApiChangePass apiChangePass)
     {
@@ -330,5 +296,81 @@ public class ApiPropietariosController : ControllerBase
         }
         return Ok("Se ha actualizado la clave");
     }
+
+
+    // POST: api/ApiPropietarios/RequestPasswordReset
+    [HttpPost("RequestPasswordReset")]
+    [AllowAnonymous]
+    public async Task<IActionResult> RequestPasswordReset([FromForm] string email)
+    {
+        // Buscar el propietario por correo
+        var propietario = await contexto.Propietario.FirstOrDefaultAsync(x => x.Correo == email);
+        if (propietario == null)
+        {
+            return NotFound("Email no encontrado");
+        }
+
+        // Generar un token único (GUID)
+        string token = Guid.NewGuid().ToString();
+
+        // Guardar el token en caché con una expiración (ejemplo: 30 minutos)
+        MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30) // El token expira en 30 minutos
+        };
+        cache.Set(token, propietario.Correo, cacheOptions); // Almacena el token con el correo asociado
+
+        // Enviar correo de confirmación con el token en el enlace - Verificar la URL de la aplicación
+        string resetUrl = $"{Request.Scheme}//https://ll3bj5xg-5058.brs.devtunnels.ms/api/ApiPropietarios/ConfirmResetPassword?token={token}";
+        await EnviarCorreo(propietario.Correo, "Confirmación de Restablecimiento de Contraseña", $"Haga clic en el siguiente enlace para confirmar el restablecimiento de su contraseña: {resetUrl}");
+
+        return Ok("Se ha enviado un correo de confirmación para restablecer la contraseña.");
+    }
+
+    // Confirmacion de restablecimiento de contraseña
+    [HttpGet("ConfirmResetPassword")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ConfirmResetPassword([FromQuery] string token)
+    {
+        // Verificar si el token existe en la caché
+        if (!cache.TryGetValue(token, out string email))
+        {
+            return BadRequest("Token inválido o expirado.");
+        }
+
+        // Buscar el propietario por correo
+        var propietario = await contexto.Propietario.FirstOrDefaultAsync(x => x.Correo == email);
+        if (propietario == null)
+        {
+            return NotFound("Propietario no encontrado.");
+        }
+
+        // Generar una nueva clave aleatoria
+        string nuevaClave = GenerarClaveAleatoria();
+        Console.WriteLine($"La nueva clave es: {nuevaClave}");
+
+        // Hashear la nueva contraseña
+        propietario.Contraseña = Convert.ToBase64String(
+            KeyDerivation.Pbkdf2(
+                password: nuevaClave,
+                salt: System.Text.Encoding.ASCII.GetBytes(configuration["Salt"]),
+                prf: KeyDerivationPrf.HMACSHA1,
+                iterationCount: 1000,
+                numBytesRequested: 256 / 8
+            )
+        );
+
+        // Guardar los cambios en la base de datos
+        await contexto.SaveChangesAsync();
+
+        // Eliminar el token de la cache una vez usado
+        cache.Remove(token);
+
+        // Enviar un correo con la nueva contraseña sin hashear al propietario
+        await EnviarCorreo(propietario.Correo, "Contraseña Restablecida", $"Su nueva clave es: {nuevaClave}");
+
+        return Ok("Se ha restablecido la contraseña y se ha enviado un correo con la nueva clave.");
+    }
+
 
 }

@@ -14,6 +14,8 @@ namespace Inmobiliaria.Data
         public DbSet<InmuebleTipo> Tipo_inmueble { get; set; }
         public DbSet<Pago> Pago { get; set; }
 
+        public DbSet<FotosInmueble> Fotos_inmueble { get; set; }
+
 
     }
 }
