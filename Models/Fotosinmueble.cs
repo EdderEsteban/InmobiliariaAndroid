@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Inmobiliaria.Models;
 
@@ -13,12 +14,13 @@ public class FotosInmueble
     [NotMapped]
     public IFormFile? FotoFile { get; set; }
 
-    // Clave foránea correcta para 'Inmueble'
-    [ForeignKey("Id_inmueble")]
+    // Definir la clave foránea correctamente
     public int Id_inmueble { get; set; }
 
-    // Relación correcta con 'Inmueble'
-    
-    public Inmuebles? Inmueble { get; set; }
+    // Relacionar correctamente con el inmueble
+    [ForeignKey("Id_inmueble")]
+    [JsonIgnore]
+    public ApiInmuebles? Inmueble { get; set; }
 }
+
 

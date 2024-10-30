@@ -12,9 +12,9 @@ public class ApiInmuebles
     [StringLength(100, ErrorMessage = "El campo Dirección debe tener como máximo {1} caracteres.")]
     public string? Direccion { get; set; }
 
-    public string? Uso { get; set; } 
+    public string? Uso { get; set; }
 
-    [ForeignKey("Tipo")] 
+    [ForeignKey("Tipo")]
     public int? Id_tipo { get; set; }
 
     public InmuebleTipo? Tipo { get; set; }
@@ -62,12 +62,6 @@ public class ApiInmuebles
 
     public bool Borrado { get; set; }
 
-    // Relación con FotosInmueble (uno a muchos)
-    public List<FotosInmueble> Fotos { get; set; }
-}
-
-public enum UsoApiInmueble
-{
-    Comercial = 1,
-    Residencial = 2
+    // Relación con 'FotosInmueble'
+    public List<FotosInmueble> Fotos { get; set; } = [];
 }

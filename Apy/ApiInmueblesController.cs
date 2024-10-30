@@ -67,9 +67,9 @@ public class ApiInmueblesController : ControllerBase
     {
         try
         {
-            // Buscar el inmueble por su ID, incluyendo su tipo y las fotos relacionadas
+            // Buscar el inmueble por su ID
             var inmueble = await contexto.Inmueble
-                .Include(i => i.Tipo) // Incluir el tipo de inmueble
+                .Include(i => i.Tipo)  // Incluir el tipo de inmueble
                 .Include(i => i.Fotos) // Incluir las fotos asociadas al inmueble
                 .FirstOrDefaultAsync(i => i.Id_inmueble == id); // Filtrar por ID
 
@@ -89,6 +89,39 @@ public class ApiInmueblesController : ControllerBase
         }
     }
 
+    // POST: api/ApiInmuebles/AltaInmueble
+    [HttpPost("AltaInmueble")]
+    public async Task<IActionResult> AltaInmueble([FromBody] ApiInmuebles inmueble)
+    {
+        try
+        {
+            // Validar los datos del inmueble
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Obtener el ID del propietario desde el token JWT (ClaimTypes.NameIdentifier)
+            var idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var propietarioId = int.Parse(idClaim);
+
+            if (propietarioId == 0)
+                return Unauthorized("Usuario no logueado.");
+
+            // Asignar el ID del propietario al inmueble
+            inmueble.Id_propietario = propietarioId;
+
+            // Guardar el inmueble en la base de datos
+            contexto.Inmueble.Add(inmueble);
+            await contexto.SaveChangesAsync();
+
+            return Ok(inmueble);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
+    }
 
 
     // POST: api/ApiInmuebles/SubirFotos
