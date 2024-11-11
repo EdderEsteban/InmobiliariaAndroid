@@ -224,22 +224,48 @@ public class ApiInmueblesController : ControllerBase
     [HttpGet("ListadodeContratos/{id}")]
     public async Task<IActionResult> ListadodeContratos(int id)
     {
-        Console.WriteLine("Entrando a ListadodeContratos");
         try
         {
             // Obtener todos los contratos para el inmueble con el ID especificado
-            var contratos = await contexto.Contrato
-            .Where(c => c.Id_inmueble == id)
-            .ToListAsync();
+            var contratos = await contexto.Contrato.Where(c => c.Id_inmueble == id).ToListAsync();
 
             // Verificar si existen contratos asociados al inmueble
             if (contratos == null || !contratos.Any())
                 return NotFound("No se encontraron contratos para el inmueble especificado.");
-                foreach (var contrato in contratos){
-                    Console.WriteLine($"Contratos encontrados: {contratos[0].Id_contrato}");
+
+            // Recorrer la lista de contratos y verificar la fecha de fin
+            foreach (var contrato in contratos)
+            {
+                if (contrato.Fecha_fin > DateTime.Now)
+                {
+                    contrato.Vigencia = true;
+                    // Guardar los cambios en la base de datos
+                    await ActualizarVigencia(contrato.Id_contrato, contrato.Vigencia);
                 }
-                ;
+            }
             return Ok(contratos);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
+    }
+
+    // Funcion auxiliar para guardar la actualizacion
+    [HttpPut("ActualizarVigencia/{id}")]
+    public async Task<IActionResult> ActualizarVigencia(int id, bool vigencia)
+    {
+        try
+        {
+            var contrato = await contexto.Contrato.FindAsync(id);
+
+            if (contrato == null)
+                return NotFound("No se encontró el contrato con el ID especificado.");
+
+            contrato.Vigencia = vigencia;
+            await contexto.SaveChangesAsync();
+
+            return Ok("La vigencia del contrato ha sido actualizada con éxito.");
         }
         catch (Exception ex)
         {
@@ -254,10 +280,10 @@ public class ApiInmueblesController : ControllerBase
         try
         {
             // Obtener todos los pagos asociados al contrato con el ID especificado
-            var pagos = await contexto.Pago
-            .Where(p => p.Id_Contrato == id)
+            var pagos = await contexto
+            .Pago.Where(p => p.Id_Contrato == id)
             .ToListAsync();
-
+            
             // Verificar si existen pagos asociados al contrato
             if (pagos == null || !pagos.Any())
                 return NotFound("No se encontraron pagos para el contrato especificado.");

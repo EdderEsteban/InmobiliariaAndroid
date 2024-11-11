@@ -23,6 +23,18 @@ namespace Inmobiliaria.Data
                 .HasOne(c => c.Inquilino)
                 .WithMany()
                 .HasForeignKey(c => c.Id_inquilino);
+            
+            modelBuilder
+                .Entity<Pago>()
+                .HasOne(p => p.Inquilino)
+                .WithMany()
+                .HasForeignKey(p => p.Id_Inquilino);
+
+            modelBuilder
+                .Entity<Pago>()
+                .HasOne(p => p.Contrato)
+                .WithMany()
+                .HasForeignKey(p => p.Id_Contrato);
         }
     }
 }
