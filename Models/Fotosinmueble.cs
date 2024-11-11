@@ -11,6 +11,7 @@ public class FotosInmueble
 
     public string? FotoUrl { get; set; }
 
+    [JsonIgnore]
     [NotMapped]
     public IFormFile? FotoFile { get; set; }
 

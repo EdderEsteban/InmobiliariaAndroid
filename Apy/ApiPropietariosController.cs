@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using MimeKit;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Inmobiliaria.Controllers;
 
@@ -51,7 +51,9 @@ public class ApiPropietariosController : ControllerBase
     // Función auxiliar para enviar correos electrónicos
     private async Task EnviarCorreo(string destinatario, string asunto, string cuerpo)
     {
-        Console.WriteLine($"Enviando correo a: {destinatario} con el asunto: {asunto} y el cuerpo: {cuerpo}");
+        Console.WriteLine(
+            $"Enviando correo a: {destinatario} con el asunto: {asunto} y el cuerpo: {cuerpo}"
+        );
         var message = new MimeMessage();
         message.To.Add(new MailboxAddress("", destinatario));
         message.From.Add(new MailboxAddress("Inmobiliaria", configuration["SMTP:User"]));
@@ -108,12 +110,12 @@ public class ApiPropietariosController : ControllerBase
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, propietario.Id_Propietario.ToString()),
-            new Claim(ClaimTypes.Name, propietario.Correo),
-            new Claim("FullName", propietario.Nombre + " " + propietario.Apellido),
-            new Claim(ClaimTypes.Role, "Propietario")
-        };
+            {
+                new Claim(ClaimTypes.NameIdentifier, propietario.Id_Propietario.ToString()),
+                new Claim(ClaimTypes.Name, propietario.Correo),
+                new Claim("FullName", propietario.Nombre + " " + propietario.Apellido),
+                new Claim(ClaimTypes.Role, "Propietario")
+            };
 
             var token = new JwtSecurityToken(
                 issuer: configuration["TokenAuthentication:Issuer"],
@@ -164,10 +166,11 @@ public class ApiPropietariosController : ControllerBase
 
     // PUT: api/ApiPropietarios/UpdatePropietario
     [HttpPut("UpdatePropietario")]
-    public async Task<IActionResult> UpdatePropietario([FromForm] Propietarios propietario)
+    public async Task<IActionResult> UpdatePropietario([FromBody] Propietarios propietario) // Cambiamos FormForm a FromBody para enviar el objeto Propietario
     {
         try
         {
+            Console.WriteLine(propietario.ToString());
             // Obtener el correo del usuario logueado desde el token JWT
             var userEmail = User.Identity?.Name;
 
@@ -222,34 +225,48 @@ public class ApiPropietariosController : ControllerBase
 
     // PUT: api/ApiPropietarios/ActualizarFoto
     [HttpPut("ActualizarFoto")]
-    public async Task<IActionResult> ActualizarFoto([FromForm] IFormFile foto)
+    public async Task<IActionResult> ActualizarFoto([FromForm] IFormFile avatarFile)
     {
-        var userEmail = User.Identity?.Name;
-        var propietario = await contexto.Propietario.FirstOrDefaultAsync(x => x.Correo == userEmail);
-        if (propietario == null)
-            return NotFound("Propietario no encontrado");
-
-        if (foto == null || foto.Length == 0)
-            return BadRequest("No se subió ninguna foto");
-
-        // Guardar la imagen en la carpeta Uploads
-        string wwwPath = environment.WebRootPath;
-        string fileName = $"fotoperfil{propietario.Id_Propietario}{Path.GetExtension(foto.FileName)}";
-        string path = Path.Combine(wwwPath, "/Uploads", fileName);
-
-        using (var stream = new FileStream(path, FileMode.Create))
+        try
         {
-            await foto.CopyToAsync(stream);
+            var userEmail = User.Identity?.Name;
+            var propietarioExistente = await contexto.Propietario.FirstOrDefaultAsync(x =>
+                x.Correo == userEmail
+            );
+
+            if (propietarioExistente == null)
+                return NotFound("Propietario no encontrado");
+
+            if (avatarFile == null || avatarFile.Length == 0)
+                return BadRequest("No se subió ninguna foto");
+
+            string wwwPath = environment.WebRootPath;
+            string fileName =
+                $"fotoperfil_{propietarioExistente.Id_Propietario}_{Guid.NewGuid()}{Path.GetExtension(avatarFile.FileName)}";
+            string path = Path.Combine(wwwPath, "Uploads", fileName);
+
+            // Guardar el archivo en la carpeta especificada
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await avatarFile.CopyToAsync(stream);
+            }
+
+            // Asignar la URL relativa al campo Avatar
+            propietarioExistente.Avatar = $"/Uploads/{fileName}";
+
+            // Asegurar que la propiedad Avatar esté en el registro de cambio
+            contexto.Propietario.Update(propietarioExistente);
+            await contexto.SaveChangesAsync();
+
+            return Ok(propietarioExistente.Avatar);
         }
-
-        propietario.Avatar = $"/Uploads/{fileName}";
-        contexto.Propietario.Update(propietario);
-        await contexto.SaveChangesAsync();
-
-        return Ok(propietario);
+        catch (Exception ex)
+        {
+            return BadRequest($"Error: {ex.Message}");
+        }
     }
 
-    
+    // PUT: api/ApiPropietarios/UpdatePassword
     [HttpPut("UpdatePassword")]
     public async Task<IActionResult> UpdatePassword([FromForm] ApiChangePass apiChangePass)
     {
@@ -257,7 +274,9 @@ public class ApiPropietariosController : ControllerBase
         {
             // Obtener el correo del usuario logueado desde el token JWT
             var userEmail = User.Identity?.Name;
-            var propietario = await contexto.Propietario.FirstOrDefaultAsync(x => x.Correo == userEmail);
+            var propietario = await contexto.Propietario.FirstOrDefaultAsync(x =>
+                x.Correo == userEmail
+            );
             if (propietario == null)
                 return NotFound("Email no encontrado");
 
@@ -297,14 +316,13 @@ public class ApiPropietariosController : ControllerBase
         return Ok("Se ha actualizado la clave");
     }
 
-
     // POST: api/ApiPropietarios/RequestPasswordReset
     [HttpPost("RequestPasswordReset")]
     [AllowAnonymous]
-    public async Task<IActionResult> RequestPasswordReset([FromForm] string email)
+    public async Task<IActionResult> RequestPasswordReset([FromForm] string mail)
     {
         // Buscar el propietario por correo
-        var propietario = await contexto.Propietario.FirstOrDefaultAsync(x => x.Correo == email);
+        var propietario = await contexto.Propietario.FirstOrDefaultAsync(x => x.Correo == mail);
         if (propietario == null)
         {
             return NotFound("Email no encontrado");
@@ -321,8 +339,13 @@ public class ApiPropietariosController : ControllerBase
         cache.Set(token, propietario.Correo, cacheOptions); // Almacena el token con el correo asociado
 
         // Enviar correo de confirmación con el token en el enlace - Verificar la URL de la aplicación
-        string resetUrl = $"{Request.Scheme}//https://ll3bj5xg-5058.brs.devtunnels.ms/api/ApiPropietarios/ConfirmResetPassword?token={token}";
-        await EnviarCorreo(propietario.Correo, "Confirmación de Restablecimiento de Contraseña", $"Haga clic en el siguiente enlace para confirmar el restablecimiento de su contraseña: {resetUrl}");
+        string resetUrl =
+            $"{Request.Scheme}//https://cvhlm5sz-5058.brs.devtunnels.ms/api/ApiPropietarios/ConfirmResetPassword?token={token}";
+        await EnviarCorreo(
+            propietario.Correo,
+            "Confirmación de Restablecimiento de Contraseña",
+            $"Haga clic en el siguiente enlace para confirmar el restablecimiento de su contraseña: {resetUrl}"
+        );
 
         return Ok("Se ha enviado un correo de confirmación para restablecer la contraseña.");
     }
@@ -367,10 +390,12 @@ public class ApiPropietariosController : ControllerBase
         cache.Remove(token);
 
         // Enviar un correo con la nueva contraseña sin hashear al propietario
-        await EnviarCorreo(propietario.Correo, "Contraseña Restablecida", $"Su nueva clave es: {nuevaClave}");
+        await EnviarCorreo(
+            propietario.Correo,
+            "Contraseña Restablecida",
+            $"Su nueva clave es: {nuevaClave}"
+        );
 
         return Ok("Se ha restablecido la contraseña y se ha enviado un correo con la nueva clave.");
     }
-
-
 }

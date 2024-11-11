@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Inmobiliaria.Models;
 
@@ -33,13 +34,20 @@ public class Propietarios
     [EmailAddress(ErrorMessage = "El campo Correo no tiene un formato de dirección de correo electrónico válido.")]
     public string? Correo { get; set; }
 
-    public String? Contraseña {get;set;}
+     [JsonIgnore]
+    public string? Contraseña { get; set; }
     
-    [NotMapped]
+    
     public String? Avatar{get; set;}
 
+     [NotMapped]
+     [JsonIgnore]
+    public IFormFile? AvatarFile { get; set; } 
+    
+    [JsonIgnore]
     public int? Id_usuario { get; set; }
 
+    [JsonIgnore]
     public DateTime? Fecha { get; set; } = DateTime.Now;
 
     public Propietarios()

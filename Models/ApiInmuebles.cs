@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Inmobiliaria.Models;
 
@@ -48,14 +49,17 @@ public class ApiInmuebles
 
     public Boolean? Disponible { get; set; }
 
+    [JsonIgnore]
     [NotMapped]
     public string? InmuebleImg { get; set; } = "";
 
     [ForeignKey("Propietarios")]
-    public int? Id_propietario { get; set; }
+    public int? Id_Propietario { get; set; }
 
+    [JsonIgnore]
     public Propietarios? Propietarios { get; set; }
 
+    [JsonIgnore]
     public int? Id_usuario { get; set; }
 
     public DateTime? Fecha { get; set; } = DateTime.Now;
@@ -63,5 +67,5 @@ public class ApiInmuebles
     public bool Borrado { get; set; }
 
     // Relación con 'FotosInmueble'
-    public List<FotosInmueble> Fotos { get; set; } = [];
+    public List<FotosInmueble> Fotos { get; set; } = new List<FotosInmueble>();
 }
