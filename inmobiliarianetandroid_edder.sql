@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 30-10-2024 a las 23:45:24
+-- Tiempo de generación: 12-11-2024 a las 02:11:08
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -51,7 +51,7 @@ INSERT INTO `contrato` (`id_contrato`, `id_inquilino`, `monto`, `id_inmueble`, `
 (18, 22, 389, 42, '2023-12-25', '2024-06-25', 0, NULL, '2024-08-27 23:08:00'),
 (19, 18, 497, 95, '2023-08-30', '2024-02-05', 0, NULL, '2024-08-27 23:08:00'),
 (21, 39, 491, 58, '2024-07-10', '2024-03-03', 0, NULL, '2024-08-27 23:08:00'),
-(22, 34, 945, 3, '2024-08-14', '2024-04-27', 0, NULL, '2024-08-27 23:08:01'),
+(22, 34, 945, 8, '2024-08-14', '2024-04-27', 0, NULL, '2024-08-27 23:08:01'),
 (23, 41, 793, 81, '2024-06-26', '2024-03-12', 0, NULL, '2024-08-27 23:08:01'),
 (24, 42, 593, 59, '2023-09-08', '2024-08-20', 0, NULL, '2024-08-27 23:08:01'),
 (25, 17, 981, 19, '2023-09-01', '2024-02-24', 0, NULL, '2024-08-27 23:08:01'),
@@ -99,7 +99,7 @@ INSERT INTO `contrato` (`id_contrato`, `id_inquilino`, `monto`, `id_inmueble`, `
 (69, 22, 389, 42, '2023-12-25', '2024-06-25', 0, NULL, '2024-08-27 23:09:10'),
 (70, 18, 497, 95, '2023-08-30', '2024-02-05', 0, NULL, '2024-08-27 23:09:10'),
 (72, 39, 491, 58, '2024-07-10', '2024-03-03', 0, NULL, '2024-08-27 23:09:10'),
-(73, 34, 945, 3, '2024-08-14', '2024-04-27', 0, NULL, '2024-08-27 23:09:10'),
+(73, 34, 945, 9, '2024-08-14', '2024-04-27', 0, NULL, '2024-08-27 23:09:10'),
 (74, 41, 793, 81, '2024-06-26', '2024-03-12', 0, NULL, '2024-08-27 23:09:10'),
 (75, 42, 593, 59, '2023-09-08', '2024-08-20', 0, NULL, '2024-08-27 23:09:10'),
 (76, 17, 981, 19, '2023-09-01', '2024-02-24', 0, NULL, '2024-08-27 23:09:10'),
@@ -113,7 +113,7 @@ INSERT INTO `contrato` (`id_contrato`, `id_inquilino`, `monto`, `id_inmueble`, `
 (84, 31, 762, 5, '2024-07-08', '2024-05-15', 0, NULL, '2024-08-27 23:09:11'),
 (85, 28, 235, 89, '2024-04-23', '2024-07-19', 0, NULL, '2024-08-27 23:09:11'),
 (86, 28, 311, 90, '2024-01-02', '2024-07-31', 0, NULL, '2024-08-27 23:09:11'),
-(87, 56, 762, 7, '2024-04-18', '2023-11-13', 0, NULL, '2024-08-27 23:09:11'),
+(87, 56, 600000, 7, '2024-04-18', '2025-01-31', 1, NULL, '2024-08-27 23:09:11'),
 (88, 29, 639, 32, '2024-05-11', '2023-08-31', 0, NULL, '2024-08-27 23:09:11'),
 (89, 47, 251, 36, '2024-07-28', '2024-05-22', 0, NULL, '2024-08-27 23:09:11'),
 (90, 61, 731, 61, '2023-11-13', '2024-05-23', 0, NULL, '2024-08-27 23:09:11'),
@@ -144,7 +144,7 @@ INSERT INTO `contrato` (`id_contrato`, `id_inquilino`, `monto`, `id_inmueble`, `
 (117, 34, 248, 16, '2023-09-11', '2024-02-11', 0, NULL, '2024-08-27 23:09:12'),
 (118, 17, 138, 93, '2024-04-11', '2024-04-07', 0, NULL, '2024-08-27 23:09:12'),
 (119, 1, 300000, 17, '2024-01-01', '2024-08-31', 0, NULL, '2024-09-23 00:32:32'),
-(121, 1, 300000, 3, '2024-01-01', '2024-08-31', 0, NULL, '2024-09-23 00:35:00'),
+(121, 1, 300000, 9, '2024-01-01', '2024-08-31', 0, NULL, '2024-09-23 00:35:00'),
 (122, 1, 300000, 98, '2024-09-01', '2024-12-31', 1, NULL, '2024-09-23 00:37:17');
 
 -- --------------------------------------------------------
@@ -164,8 +164,11 @@ CREATE TABLE `fotos_inmueble` (
 --
 
 INSERT INTO `fotos_inmueble` (`id_foto`, `fotourl`, `id_inmueble`) VALUES
-(1, '/Uploads/InmueblesImg\\d13851a2-16d8-46d6-ad37-3e2801bd52eb_casa.png', 9),
-(2, '/Uploads/InmueblesImg\\a91373e7-c220-4331-b58d-813098d2bf5a_casa.png', 9);
+(5, '/Uploads/InmueblesImg/ccb4b0a8-b080-49ba-b191-918dcff46b33_comedor 1.png', 9),
+(6, '/Uploads/InmueblesImg/7ee8f2c9-32b9-4b05-a739-3f804a1a4934_casa 1.png', 9),
+(18, '/Uploads/InmueblesImg/46a9a27f-ac3e-430e-9c35-d64b279972cb_1731359871365.jpg', 2),
+(19, '/Uploads/InmueblesImg/52663096-a260-40e3-aeec-ce8ce157ad16_1731359871373.jpg', 2),
+(20, '/Uploads/InmueblesImg/ec864c64-299d-45c9-97bd-7ed1c1e0a2e4_1731359961825.jpg', 114);
 
 -- --------------------------------------------------------
 
@@ -196,15 +199,15 @@ CREATE TABLE `inmueble` (
 
 INSERT INTO `inmueble` (`id_inmueble`, `direccion`, `uso`, `id_tipo`, `cantidad_ambientes`, `precio_alquiler`, `latitud`, `longitud`, `activo`, `disponible`, `id_propietario`, `id_usuario`, `fecha`, `borrado`) VALUES
 (1, 'Pringles 330 Dpto 3', 'Residencial', 1, 3, 230.00, '-33.30107764626808', '-66.32826228920763', 1, 0, 3, NULL, '2024-04-03 23:16:50', 0),
-(2, 'Maipu 670', 'Comercial', 1, 3, 63000.00, '-33.30228322937067', '-66.33193927790455', 1, 0, 4, NULL, '2024-04-10 00:43:56', 1),
+(2, 'Maipu 670', 'Comercial', 1, 3, 63000.00, '-33.30228322937067', '-66.33193927790455', 0, 0, 105, NULL, '2024-04-10 00:43:56', 1),
 (3, 'Concaran', 'Residencial', 1, 1, 56000.00, '-33.302314597600216', '-66.33191967583032', 1, 0, 1, NULL, '2024-04-12 16:58:33', 0),
 (5, 'Merlo', 'Comercial', 1, 3, 68000.00, '-33.30228322937067', '-66.33193927790455', 1, 0, 3, NULL, '2024-04-12 22:25:52', 0),
-(7, 'Santiago', 'Comercial', 1, 1, 900000.00, '-33.30228322937067', '-66.33193927790455', 1, 0, 4, NULL, '2024-04-13 01:02:44', 0),
+(7, 'Santiago', 'Comercial', 1, 1, 900000.00, '-33.30228322937067', '-66.33193927790455', 1, 0, 105, NULL, '2024-04-13 01:02:44', 0),
 (8, 'La Punta', 'Residencial', 1, 4, 56000.00, '-33.30228322937067', '-66.31959623517908', 1, 0, 1, NULL, '2024-04-25 00:01:35', 0),
-(9, '91510 Hermina Junction', 'Residencial', 3, 2, 0.00, '-20.9829904', '-40.9990597', 0, 0, 105, NULL, '2024-08-27 23:02:22', 0),
-(10, '95 Eastlawn Street', 'Residencial', 5, 1, 0.00, '5.668899', '-72.994095', 1, 1, 105, NULL, '2024-08-27 23:02:23', 0),
+(9, '91510 Hermina Junction', 'Residencial', 3, 2, 0.00, '-20.9829904', '-40.9990597', 1, 0, 105, NULL, '2024-08-27 23:02:22', 0),
+(10, '95 Eastlawn Street', 'Residencial', 5, 1, 0.00, '5.668899', '-72.994095', 1, 1, 10, NULL, '2024-08-27 23:02:23', 0),
 (11, '3482 Emmet Circle', 'Comercial', 1, 1, 0.00, '-6.8055934', '110.7629067', 1, 1, 33, NULL, '2024-08-27 23:02:23', 1),
-(12, '70827 Brickson Park Terrace', 'Residencial', 5, 1, 0.00, '39.639488', '110.606483', 0, 1, 105, NULL, '2024-08-27 23:02:23', 0),
+(12, '70827 Brickson Park Terrace', 'Residencial', 5, 1, 0.00, '39.639488', '110.606483', 0, 1, 10, NULL, '2024-08-27 23:02:23', 0),
 (13, '03 Summer Ridge Alley', 'Comercial', 3, 3, 0.00, '41.5590095', '82.6211533', 0, 1, 12, NULL, '2024-08-27 23:02:23', 1),
 (14, '5955 Orin Hill', 'Residencial', 4, 4, 0.00, '35.83339', '102.6395', 0, 0, 46, NULL, '2024-08-27 23:02:23', 1),
 (15, '3 International Circle', 'Comercial', 2, 3, 0.00, '41.117916', '19.610198', 1, 0, 44, NULL, '2024-08-27 23:02:23', 0),
@@ -301,7 +304,8 @@ INSERT INTO `inmueble` (`id_inmueble`, `direccion`, `uso`, `id_tipo`, `cantidad_
 (106, '4 Killdeer Drive', 'Residencial', 5, 3, 0.00, '56.0349544', '35.9510395', 0, 1, 28, NULL, '2024-08-27 23:02:26', 0),
 (107, '5 Meadow Valley Way', 'Comercial', 3, 2, 0.00, '38.8426524', '-9.1289108', 0, 0, 17, NULL, '2024-08-27 23:02:26', 0),
 (108, '817 Lawn Avenue', 'Comercial', 5, 3, 0.00, '40.9690916', '-8.474627', 1, 1, 32, NULL, '2024-08-27 23:02:26', 0),
-(109, 'Maipu 670', 'Comercial', 2, 3, 56000.00, '-33.30228322937067', '-66.3319015570454', 1, 0, 4, NULL, '2024-09-11 00:19:30', 0);
+(109, 'Maipu 670', 'Comercial', 2, 3, 56000.00, '-33.30228322937067', '-66.3319015570454', 1, 0, 4, NULL, '2024-09-11 00:19:30', 0),
+(114, 'Caseros 633', 'Residencial', 2, 3, 600000.00, '0.0', '0.0', 1, 1, 105, NULL, '2024-11-11 18:19:12', 0);
 
 -- --------------------------------------------------------
 
@@ -326,7 +330,7 @@ CREATE TABLE `inquilino` (
 --
 
 INSERT INTO `inquilino` (`id_inquilino`, `nombre`, `apellido`, `dni`, `direccion`, `telefono`, `correo`, `id_usuario`, `fecha`) VALUES
-(1, 'Edder', 'Santibañez', '93962239', 'San Luis', '2664271316', 'edder@santy.com', NULL, '2024-04-02 00:00:00'),
+(1, 'Inquilino', 'SanLuis', '12345678', 'San Luis', '2664271316', 'inquilino@sanluis.com', NULL, '2024-04-02 00:00:00'),
 (2, 'Diego', 'Orellano', '98765432', 'Santa Fe', '2665122345', 'diego@orellano.com', NULL, '2024-04-02 00:00:00'),
 (6, 'Mauricio', 'Ferrieres', '45685212', 'San Luis', '2664854565', 'mauricio@ferrieres.com', NULL, '2024-04-02 00:00:00'),
 (8, 'Fatima', 'Lebri', '29426271', 'San Luis', '2664718225', 'fatima@lebri.com', NULL, '2024-04-02 00:00:00'),
@@ -455,7 +459,10 @@ INSERT INTO `pago` (`id_pago`, `id_contrato`, `fecha_pago`, `monto`, `periodo`, 
 (11, 15, '2024-09-26', 300000.00, '2024-10-01', NULL, 6),
 (12, 122, '2024-09-26', 150000.00, '2024-10-11', NULL, 1),
 (13, 16, '2024-09-26', 300000.00, '2024-10-02', NULL, 8),
-(14, 122, '2024-09-26', 300000.00, '2024-09-06', NULL, 1);
+(14, 122, '2024-09-26', 300000.00, '2024-09-06', NULL, 1),
+(15, 87, '2024-11-11', 600000.00, '2024-09-11', 34, 56),
+(16, 87, '2024-11-11', 600000.00, '2024-10-11', 34, 56),
+(17, 87, '2024-11-11', 600000.00, '2024-11-11', 34, 56);
 
 -- --------------------------------------------------------
 
@@ -484,7 +491,7 @@ CREATE TABLE `propietario` (
 INSERT INTO `propietario` (`id_propietario`, `nombre`, `apellido`, `dni`, `direccion`, `telefono`, `correo`, `contraseña`, `avatar`, `id_usuario`, `fecha`) VALUES
 (1, 'Matias', 'Diaz', '12345678', 'Merlo', '2665122345', 'maty@diaz.com', '', '', NULL, '2024-04-02 00:02:25'),
 (3, 'Simon', 'Ortega', '65498732', 'Salta', '2664857985', 'simon@ortega.com', '', '', NULL, '2024-04-09 22:50:48'),
-(4, 'Edder', 'Santibañez', '93962239', 'Min Berrondo 338', '2664271316', 'edder@santi.com', 'P9jgAcHQ8uymuSeyBkJh+Nl3vP3vozXoXLmJHm8+63g=', '', 34, '2024-04-12 23:54:42'),
+(4, 'inventado', 'Santibañez', '93962239', 'Min Berrondo 338', '2664271316', 'edder@santi.com', 'P9jgAcHQ8uymuSeyBkJh+Nl3vP3vozXoXLmJHm8+63g=', '', 34, '2024-04-12 23:54:42'),
 (5, 'Geralda', 'Brigdale', '19', '46481 Hooker Lane', '901-786-6670', 'gbrigdale0@umn.edu', '', '', NULL, '2024-08-20 20:59:50'),
 (6, 'Janna', 'Tull', '25', '3 Ridge Oak Drive', '779-874-1761', 'jtull1@sfgate.com', '', '', NULL, '2024-08-20 20:59:51'),
 (7, 'Linea', 'Proswell', '50', '3695 Johnson Way', '950-968-6588', 'lproswell2@goodreads.com', '', '', NULL, '2024-08-20 20:59:51'),
@@ -585,7 +592,7 @@ INSERT INTO `propietario` (`id_propietario`, `nombre`, `apellido`, `dni`, `direc
 (102, 'Eran', 'Backs', '54', '6 Roxbury Point', '853-991-3378', 'ebacks2p@jugem.jp', '', '', NULL, '2024-08-20 20:59:54'),
 (103, 'Caryl', 'Diloway', '10', '46 Shelley Park', '280-216-7378', 'cdiloway2q@smugmug.com', '', '', NULL, '2024-08-20 20:59:54'),
 (104, 'Baudoin', 'McAlees', '77', '877 Fairfield Street', '903-539-1722', 'bmcalees2r@dedecms.com', '', '', NULL, '2024-08-20 20:59:54'),
-(105, 'Admin', 'Admin', '12398765', 'San Luis', '2664271316', 'edder709@gmail.com', 'nZLrGlPuD7oeOxgsbSbPJVQINrzjOomJ602TJpITeww=', NULL, 34, '2024-10-16 15:28:57');
+(105, 'Edder', 'Santibañez', '93962239', 'San Luis', '2664271316', 'edder709@gmail.com', 'nZLrGlPuD7oeOxgsbSbPJVQINrzjOomJ602TJpITeww=', '/Uploads/fotoperfil_105_752288d7-f2f1-4c8e-bdbe-ad90f0da0c91.jpg', 34, '2024-10-16 15:28:57');
 
 -- --------------------------------------------------------
 
@@ -717,13 +724,13 @@ ALTER TABLE `contrato`
 -- AUTO_INCREMENT de la tabla `fotos_inmueble`
 --
 ALTER TABLE `fotos_inmueble`
-  MODIFY `id_foto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_foto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `inmueble`
 --
 ALTER TABLE `inmueble`
-  MODIFY `id_inmueble` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
+  MODIFY `id_inmueble` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=115;
 
 --
 -- AUTO_INCREMENT de la tabla `inquilino`
@@ -735,7 +742,7 @@ ALTER TABLE `inquilino`
 -- AUTO_INCREMENT de la tabla `pago`
 --
 ALTER TABLE `pago`
-  MODIFY `id_pago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id_pago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `propietario`
